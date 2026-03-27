@@ -45,9 +45,10 @@ Links look like: `{base}/set-password?token=...`
 ## Quick copy: env vars for production (minimum)
 
 ```env
-DATABASE_URL="postgresql://..."
+goldengate_DATABASE_URL="postgresql://..."
+goldengate_POSTGRES_URL_NON_POOLING="postgresql://..."
 AUTH_SECRET="<32+ random chars>"
 RESEND_API_KEY="re_..."
 ```
 
-`APP_URL` and `EMAIL_FROM` are **optional** (defaults cover Vercel + `noreply@modularequity.com`).
+`APP_URL` and `EMAIL_FROM` are **optional** (defaults cover Vercel + `noreply@modularequity.com`). On Vercel, Neon injects the `goldengate_*` DB vars automatically.

@@ -47,8 +47,8 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 
 | Variable | Purpose |
 |----------|---------|
-| `DATABASE_URL` | **PostgreSQL** (pooled — Neon / Vercel) |
-| `POSTGRES_URL_NON_POOLING` | **Direct** URL for migrations (Neon/Vercel injects; local: same as `DATABASE_URL`) |
+| `goldengate_DATABASE_URL` | **PostgreSQL** pooled (Neon / Vercel — prefixed by integration) |
+| `goldengate_POSTGRES_URL_NON_POOLING` | **Direct** URL for migrations (local: same as pooled URL) |
 | `AUTH_SECRET` | JWT signing (min 32 chars); required in production |
 | `RESEND_API_KEY` | Send welcome / magic-link email (**only email-related secret required**) |
 | `APP_URL` | *Optional* — force magic-link base URL (e.g. custom domain). If unset on Vercel, **`VERCEL_URL`** is used. |

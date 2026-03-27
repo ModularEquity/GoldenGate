@@ -5,14 +5,14 @@
 **Vercel’s first-party “Vercel Postgres” product is no longer available for new projects.**  
 Vercel now expects you to attach Postgres through the **[Vercel Marketplace](https://vercel.com/marketplace?category=storage&search=postgres)** (often **Neon** or **Supabase**). Existing “Vercel Postgres” DBs were migrated to Neon in **December 2024** ([docs](https://vercel.com/docs/storage/vercel-postgres/usage-and-pricing)).
 
-So: **you can still use Postgres with Vercel** — install a Marketplace integration (Neon is the common path) and set **`DATABASE_URL`** on your project. This app is configured for **PostgreSQL** + Prisma.
+So: **you can still use Postgres with Vercel** — install a Marketplace integration (Neon is the common path). This app’s Prisma schema expects **prefixed** env names that match your Vercel integration (e.g. **`goldengate_DATABASE_URL`**, **`goldengate_POSTGRES_URL_NON_POOLING`**).
 
 ---
 
 ## Recommended path: Neon via Vercel Marketplace
 
 1. **Vercel** → your project → **Storage** / **Marketplace** → add **Neon** (or another Postgres provider).
-2. Connect the integration — Vercel/Neon inject **`DATABASE_URL`** (pooled) and **`POSTGRES_URL_NON_POOLING`** (direct). Prisma uses both; **no manual `DIRECT_URL`**.
+2. Connect the integration — Neon injects variables **prefixed** with your project slug (e.g. `goldengate_`). Prisma is wired to **`goldengate_DATABASE_URL`** + **`goldengate_POSTGRES_URL_NON_POOLING`**. If your prefix differs, update `prisma/schema.prisma` to match.
 3. **Build:** This repo includes **`vercel.json`** so the default build runs **`npm run build:vercel`** (`prisma migrate deploy` + `next build`). If you override the build command in the Vercel UI, use the same.
 
 4. **Redeploy** the latest commit so the build runs `prisma migrate deploy` and creates tables.
@@ -23,14 +23,14 @@ So: **you can still use Postgres with Vercel** — install a Marketplace integra
 
 | Step | What to verify |
 |------|----------------|
-| **Env** | **Vercel → Settings → Environment Variables:** `DATABASE_URL` is present for **Production** (and **Preview** if you want DB on preview deploys). |
+| **Env** | **`goldengate_DATABASE_URL`** and **`goldengate_POSTGRES_URL_NON_POOLING`** present (Neon integration). |
 | **Build** | Latest deploy **succeeds** — if the build fails at `prisma migrate deploy`, see *Troubleshooting* below. |
 | **Smoke test** | Open your site → **Register** with an email → confirm row in **Neon SQL Editor** (`User` table) or that registration returns success. |
-| **Local dev** | Copy the **connection string** from Neon (Dashboard → your project → **Connection details**) into local `.env` as `DATABASE_URL` if you want the same DB as production, or create a **separate Neon branch / dev project** (recommended). |
+| **Local dev** | Use `.env` with **`goldengate_DATABASE_URL`** and **`goldengate_POSTGRES_URL_NON_POOLING`** (same values for Docker), or point at a Neon dev branch. |
 
 ### Troubleshooting: `migrate deploy` errors on Vercel
 
-If **`POSTGRES_URL_NON_POOLING`** is missing from the project env, add it from Neon (**unpooled** / **DATABASE_URL_UNPOOLED**). Prisma uses it for migrations via `directUrl` in `schema.prisma`.
+If the prefixed **`goldengate_POSTGRES_URL_NON_POOLING`** is missing, add it manually (same value as Neon’s unpooled URL). Prisma uses it for `directUrl` in `schema.prisma`.
 
 ---
 
@@ -67,12 +67,12 @@ This repo uses **PostgreSQL** (not SQLite). Easiest local setup:
 
 ```bash
 docker compose up -d
-# copy .env.example to .env — DATABASE_URL matches docker-compose.yml
+# copy .env.example to .env — goldengate_* URLs match docker-compose.yml
 npx prisma migrate deploy
 npm run dev
 ```
 
-Without Docker, point **`DATABASE_URL`** at a cloud dev DB (e.g. Neon free project).
+Without Docker, set **`goldengate_DATABASE_URL`** / **`goldengate_POSTGRES_URL_NON_POOLING`** to a cloud dev DB (e.g. Neon).
 
 ---
 
@@ -89,11 +89,11 @@ Without Docker, point **`DATABASE_URL`** at a cloud dev DB (e.g. Neon free proje
 
 | Variable | Purpose |
 |----------|---------|
-| `DATABASE_URL` | **Pooled** connection — Prisma Client at runtime. |
-| `POSTGRES_URL_NON_POOLING` | **Direct** connection — **`prisma migrate`** (Neon/Vercel template name). |
+| `goldengate_DATABASE_URL` | **Pooled** connection — Prisma Client at runtime. |
+| `goldengate_POSTGRES_URL_NON_POOLING` | **Direct** connection — **`prisma migrate`**. |
 
-**Vercel + Neon integration:** these are usually **injected automatically**. No `DIRECT_URL` required.
+Prefix **`goldengate_`** matches this Vercel project’s Neon integration. Rename in `schema.prisma` if your integration uses a different prefix.
 
-**Local Docker:** set **`POSTGRES_URL_NON_POOLING`** to the **same** URL as **`DATABASE_URL`** (see `.env.example`).
+**Local Docker:** same URL for both vars (see `.env.example`).
 
-Never commit secrets; set variables in Vercel **Environment Variables**.
+Never commit secrets; Vercel injects them via the Neon integration.
