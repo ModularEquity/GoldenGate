@@ -89,9 +89,13 @@ export default async function DashboardPage() {
       <section className="rounded-xl border border-dashed border-border bg-background/50 p-6">
         <h2 className="font-medium text-foreground">Quick reference</h2>
         <p className="mt-2 text-sm text-muted">
+          <Link href="/dashboard/faq" className="text-accent hover:underline">
+            Investor FAQ
+          </Link>
+          {" · "}
           See <code className="rounded bg-card px-1 py-0.5 text-xs">AGENTS.md</code>{" "}
-          in the repo for the full investor journey table. Need help? Contact
-          your sponsor at Modular Equity.
+          in the repo for the full journey. Need help? Contact your sponsor at
+          Modular Equity.
         </p>
       </section>
     </div>

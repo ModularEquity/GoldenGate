@@ -23,6 +23,61 @@ model User {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   magicLinkTokens MagicLinkToken[]
+  wallets         Wallet[]
+  plaidAccounts   PlaidAccount[]
+  fundingIntents  FundingIntent[]
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String
+  address   String
+  chain     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model PlaidAccount {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId           String
+  accessToken      String
+  institutionName  String?
+  accountId        String
+  mask             String?
+  name             String?
+  subtype          String?
+  createdAt        DateTime @default(now())
+
+  fundingIntents FundingIntent[]
+
+  @@index([userId])
+}
+
+enum FundingStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model FundingIntent {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountCents     Int
+  currency        String         @default("USD")
+  plaidAccountId  String?
+  plaidAccount    PlaidAccount?  @relation(fields: [plaidAccountId], references: [id], onDelete: SetNull)
+  status          FundingStatus  @default(PENDING)
+  note            String?
+  createdAt       DateTime       @default(now())
+
+  @@index([userId])
 }
 
 model MagicLinkToken {

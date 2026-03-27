@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionFromCookies } from "@/lib/auth-session";
+import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
 
 export const metadata = {
   title: "Deals — GoldenGate",
@@ -23,8 +24,17 @@ export default async function DealsPage() {
           Deal room
         </h1>
         <p className="mt-2 text-muted">
-          Fix-and-flip and renovation opportunities — review materials before
-          subscribing.
+          Review fix-and-flip and renovation opportunities. Shared diligence
+          lives in the{" "}
+          <a
+            href={INVESTOR_GOOGLE_DOCS.dealRoomFolder}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline"
+          >
+            Deal room Google Drive folder ↗
+          </a>
+          .
         </p>
       </div>
 
@@ -33,7 +43,8 @@ export default async function DealsPage() {
           {
             title: "Sample renovation — Austin, TX",
             status: "Open for review",
-            detail: "Underwriting summary, renovation budget, exit comps — placeholder.",
+            detail:
+              "Underwriting summary, renovation budget, exit comps — placeholder; add files to the Deal room folder.",
           },
           {
             title: "Pipeline",

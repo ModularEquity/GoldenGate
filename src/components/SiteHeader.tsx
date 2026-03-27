@@ -23,6 +23,12 @@ export async function SiteHeader() {
               >
                 Dashboard
               </Link>
+              <Link
+                href="/dashboard/faq"
+                className="hover:text-foreground transition-colors"
+              >
+                FAQ
+              </Link>
               <LogoutButton />
             </>
           ) : (

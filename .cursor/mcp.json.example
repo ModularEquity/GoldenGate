@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "plaid-dashboard": {
+      "url": "https://api.dashboard.plaid.com/mcp",
+      "transport": "streamable-http",
+      "headers": {
+        "Authorization": "Bearer YOUR_PLAID_MCP_OAUTH_TOKEN"
+      }
+    }
+  }
+}

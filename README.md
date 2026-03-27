@@ -55,4 +55,4 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 | `APP_URL` | *Optional* — force magic-link base URL (e.g. custom domain). If unset on Vercel, **`VERCEL_URL`** is used. |
 | `EMAIL_FROM` | *Optional* — override default `GoldenGate <noreply@modularequity.com>` |
 
-Later: `PLAID_*`, payment provider keys.
+**Plaid (bank link):** `PLAID_CLIENT_ID`, `PLAID_SECRET`, optional `PLAID_ENV` (`sandbox` default). See `docs/plaid-mcp.md` for Plaid Dashboard MCP in Cursor.

@@ -38,17 +38,18 @@ High-level steps for implementation and UX alignment:
 
 **DocSign** in tables above means e-signature / document workflow (integrate with your chosen provider; placeholder modules are fine until vendor is chosen).
 
+## Google Docs quick links (investor)
+
+Centralized in `src/lib/investor-resources.ts` — PPM, risk disclosures, operating PDF, Deal Room Drive folder.
+
 ## Screens (MVP scaffold)
 
 1. **Home** — Value prop; CTAs to **Register** and **Login**.
 2. **Register** (`/register`) — Email → welcome magic link → **Set password** (`/set-password`).
 3. **Login** (`/login`) — Email + password → **Dashboard**. **Forgot password** (`/forgot-password`) → email → **Reset password** (`/reset-password`).
-4. **Dashboard** (`/dashboard`) — Investor hub with links to:
-   - `/dashboard/onboarding` — questionnaire, PPM, risk, tax, wire/ACH (stubs)
-   - `/dashboard/documents` — operating docs, cap table (stubs)
-   - `/dashboard/deals` — deal room (stubs)
-   - `/dashboard/subscribe` — subscription (stub)
-   - `/dashboard/fund` — Plaid/ACH (stub)
+4. **Dashboard** (`/dashboard`) — Investor hub; **FAQ** (`/dashboard/faq`) — logged-in accordion + TOC.
+5. **Sub-pages** — `/dashboard/onboarding` (PPM/risk Google Doc links, tax, banking copy), `/dashboard/documents` (operating PDF link, cap table stub), `/dashboard/deals` (Deal Room Drive link), `/dashboard/subscribe` (stub).
+6. **Fund** (`/dashboard/fund`) — Plaid Link, **wallets** (DB), **funding** intents (DB log; live ACH via Plaid Transfer / Stripe later).
 
 Additional routes mirror the investor journey table as features are built.
 

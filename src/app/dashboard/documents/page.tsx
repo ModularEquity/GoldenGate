@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionFromCookies } from "@/lib/auth-session";
+import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
 
 export const metadata = {
   title: "Documents — GoldenGate",
@@ -23,12 +24,23 @@ export default async function DocumentsPage() {
           Operating documents
         </h1>
         <p className="mt-2 text-muted">
-          Read-only document vault — placeholder for PDF / DocSign viewer.
+          Read-only references. Primary source remains signed PDFs and DocSign
+          packages.
         </p>
       </div>
 
-      <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted">
-        Operating agreement and related fund documents will appear here.
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="font-medium text-foreground">Operating agreement (PDF)</h2>
+        <p className="mt-2 text-sm text-muted">
+          <a
+            href={INVESTOR_GOOGLE_DOCS.operatingDoc}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline"
+          >
+            Open in Google Drive ↗
+          </a>
+        </p>
       </div>
 
       <div
@@ -37,8 +49,17 @@ export default async function DocumentsPage() {
       >
         <h2 className="font-medium text-foreground">Cap table</h2>
         <p className="text-sm text-muted">
-          Read-only position summary — placeholder until cap table data is
-          connected.
+          Read-only position summary — connect cap table data source in a future
+          release. For deal materials, see the{" "}
+          <a
+            href={INVESTOR_GOOGLE_DOCS.dealRoomFolder}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline"
+          >
+            Deal room folder ↗
+          </a>
+          .
         </p>
       </div>
     </div>
