@@ -12,7 +12,7 @@ So: **you can still use Postgres with Vercel** — install a Marketplace integra
 ## Recommended path: Neon via Vercel Marketplace
 
 1. **Vercel** → your project → **Storage** / **Marketplace** → add **Neon** (or another Postgres provider).
-2. Connect the integration so **`DATABASE_URL`** is injected. Neon also exposes a **direct** (non-pooling) URL — add it as **`DIRECT_URL`** in Vercel (Prisma needs it for `migrate deploy`; see below).
+2. Connect the integration — Vercel/Neon inject **`DATABASE_URL`** (pooled) and **`POSTGRES_URL_NON_POOLING`** (direct). Prisma uses both; **no manual `DIRECT_URL`**.
 3. **Build:** This repo includes **`vercel.json`** so the default build runs **`npm run build:vercel`** (`prisma migrate deploy` + `next build`). If you override the build command in the Vercel UI, use the same.
 
 4. **Redeploy** the latest commit so the build runs `prisma migrate deploy` and creates tables.
@@ -30,13 +30,7 @@ So: **you can still use Postgres with Vercel** — install a Marketplace integra
 
 ### Troubleshooting: `migrate deploy` errors on Vercel
 
-If the build fails during **`prisma migrate deploy`**, it’s usually because **`DATABASE_URL`** points at Neon’s **pooler** (PgBouncer). Migrations need a **direct** connection.
-
-1. In Neon → **Connection details**, copy the **direct** / **session** / non-pooling URL.
-2. In Vercel → **Environment Variables**, set **`DIRECT_URL`** to that value (keep **`DATABASE_URL`** as the pooled URL, or use Neon’s recommended split).
-3. Redeploy.
-
-The repo’s `prisma/schema.prisma` already includes `directUrl = env("DIRECT_URL")` — you only need both env vars set correctly.
+If **`POSTGRES_URL_NON_POOLING`** is missing from the project env, add it from Neon (**unpooled** / **DATABASE_URL_UNPOOLED**). Prisma uses it for migrations via `directUrl` in `schema.prisma`.
 
 ---
 
@@ -95,11 +89,11 @@ Without Docker, point **`DATABASE_URL`** at a cloud dev DB (e.g. Neon free proje
 
 | Variable | Purpose |
 |----------|---------|
-| `DATABASE_URL` | **Pooled** connection (Neon “Transaction” / pooler) — used at **runtime** by Prisma Client. |
-| `DIRECT_URL` | **Direct** connection (Neon “Session” / non-pooling host) — used by **`prisma migrate`**. Same DB, different URL. |
+| `DATABASE_URL` | **Pooled** connection — Prisma Client at runtime. |
+| `POSTGRES_URL_NON_POOLING` | **Direct** connection — **`prisma migrate`** (Neon/Vercel template name). |
 
-**Vercel:** set **both** for Neon. In the Neon dashboard, copy **two** strings: pooled → `DATABASE_URL`, direct → `DIRECT_URL`.
+**Vercel + Neon integration:** these are usually **injected automatically**. No `DIRECT_URL` required.
 
-**Local Docker:** use the **same** URL for both (see `.env.example`).
+**Local Docker:** set **`POSTGRES_URL_NON_POOLING`** to the **same** URL as **`DATABASE_URL`** (see `.env.example`).
 
 Never commit secrets; set variables in Vercel **Environment Variables**.

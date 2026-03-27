@@ -6,10 +6,10 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  // Pooled URL (Neon + serverless). Runtime queries use this.
+  // Pooled URL (Neon: recommended / pooler). Vercel + Neon integration sets this.
   url       = env("DATABASE_URL")
-  // Direct URL for `prisma migrate` — required on Vercel when DATABASE_URL uses PgBouncer/pooler.
-  directUrl = env("DIRECT_URL")
+  // Non-pooling URL for `prisma migrate`. Vercel + Neon injects `POSTGRES_URL_NON_POOLING` — no manual DIRECT_URL.
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
