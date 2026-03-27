@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       include: { user: true },
     });
 
-    if (!record || record.purpose !== "SET_PASSWORD" || record.usedAt) {
+    if (!record || record.purpose !== "RESET_PASSWORD" || record.usedAt) {
       return NextResponse.json(
         { ok: false, error: "This link is invalid or has already been used." },
         { status: 400 },
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
     if (record.expiresAt < new Date()) {
       return NextResponse.json(
-        { ok: false, error: "This link has expired. Register your email again." },
+        { ok: false, error: "This link has expired. Request a new reset link." },
         { status: 400 },
       );
     }
@@ -67,9 +67,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (e) {
-    console.error("[set-password]", e);
+    console.error("[reset-password]", e);
     return NextResponse.json(
-      { ok: false, error: "Could not save password. Try again." },
+      { ok: false, error: "Could not reset password. Try again." },
       { status: 500 },
     );
   }

@@ -11,23 +11,29 @@ datasource db {
   directUrl = env("goldengate_POSTGRES_URL_NON_POOLING")
 }
 
+enum MagicLinkPurpose {
+  SET_PASSWORD
+  RESET_PASSWORD
+}
+
 model User {
-  id             String           @id @default(cuid())
-  email          String           @unique
-  passwordHash   String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id              String           @id @default(cuid())
+  email           String           @unique
+  passwordHash    String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   magicLinkTokens MagicLinkToken[]
 }
 
 model MagicLinkToken {
-  id        String    @id @default(cuid())
-  tokenHash String    @unique
+  id        String           @id @default(cuid())
+  tokenHash String           @unique
   userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose   MagicLinkPurpose @default(SET_PASSWORD)
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime  @default(now())
+  createdAt DateTime         @default(now())
 
   @@index([userId])
 }

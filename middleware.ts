@@ -9,12 +9,12 @@ export async function middleware(request: NextRequest) {
 
   const token = request.cookies.get("gg_session")?.value;
   if (!token) {
-    return NextResponse.redirect(new URL("/register", request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const session = await verifySessionToken(token);
   if (!session) {
-    const res = NextResponse.redirect(new URL("/register", request.url));
+    const res = NextResponse.redirect(new URL("/login", request.url));
     res.cookies.delete("gg_session");
     return res;
   }

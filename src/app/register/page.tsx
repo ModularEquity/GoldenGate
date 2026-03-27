@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { RegisterEmailForm } from "@/components/RegisterEmailForm";
 
 export const metadata = {
@@ -19,6 +20,13 @@ export default function RegisterPage() {
       </div>
 
       <RegisterEmailForm />
+
+      <p className="text-center text-sm text-muted">
+        Already have an account?{" "}
+        <Link href="/login" className="text-accent hover:underline">
+          Sign in
+        </Link>
+      </p>
     </div>
   );
 }

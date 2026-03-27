@@ -40,12 +40,17 @@ High-level steps for implementation and UX alignment:
 
 ## Screens (MVP scaffold)
 
-1. **Home** — Value prop, firm focus (PE + real estate renovations), CTA to register.
-2. **Register email** — Submit email → **welcome email with magic link** (Resend in prod; link logged in dev if no API key).
-3. **Set password** (`/set-password?token=…`) — One-time link from email; user sets password → session cookie.
-4. **Dashboard** (`/dashboard`) — Post-auth shell; welcome packet / DocSign content to be wired next.
+1. **Home** — Value prop; CTAs to **Register** and **Login**.
+2. **Register** (`/register`) — Email → welcome magic link → **Set password** (`/set-password`).
+3. **Login** (`/login`) — Email + password → **Dashboard**. **Forgot password** (`/forgot-password`) → email → **Reset password** (`/reset-password`).
+4. **Dashboard** (`/dashboard`) — Investor hub with links to:
+   - `/dashboard/onboarding` — questionnaire, PPM, risk, tax, wire/ACH (stubs)
+   - `/dashboard/documents` — operating docs, cap table (stubs)
+   - `/dashboard/deals` — deal room (stubs)
+   - `/dashboard/subscribe` — subscription (stub)
+   - `/dashboard/fund` — Plaid/ACH (stub)
 
-Additional routes should mirror the journey above as features are built.
+Additional routes mirror the investor journey table as features are built.
 
 ## Design / mockups
 
@@ -72,7 +77,7 @@ Open `http://localhost:3000`. Build: `npm run build`.
 ## Auth & data (implemented)
 
 - **PostgreSQL + Prisma** — local Docker or cloud; Vercel uses Marketplace Postgres (e.g. Neon). See `docs/database-vercel-postgres.md`.
-- **Magic link** (hashed token, 24h TTL) + **bcrypt** password + **JWT** session cookie (`gg_session`).
+- **Magic link** with purpose: `SET_PASSWORD` (welcome) vs `RESET_PASSWORD` (forgot flow); 24h TTL; **bcrypt** + **JWT** session (`gg_session`).
 - **Email**: `RESEND_API_KEY` only; default `From` is `noreply@modularequity.com`; magic links use Vercel `VERCEL_URL` unless `APP_URL` is set. See `docs/resend-and-production.md`.
 
 Still incremental: Plaid/Mercury/DocSign, Postgres migration for production.

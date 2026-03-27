@@ -8,6 +8,7 @@ flowchart TD
   B --> B1[Email: magic link]
   B1 --> B2[Set password]
   B2 --> B3[Dashboard]
+  L[Login] --> B3
   B3 --> C[Register Investor Account - DocSign]
   C --> D[Questionnaire - DocSign]
   D --> E[PPM - Read-only]

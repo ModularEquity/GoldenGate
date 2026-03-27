@@ -26,12 +26,20 @@ export async function SiteHeader() {
               <LogoutButton />
             </>
           ) : (
-            <Link
-              href="/register"
-              className="rounded-md border border-border bg-card px-3 py-1.5 text-foreground hover:border-accent hover:text-accent transition-colors"
-            >
-              Register
-            </Link>
+            <>
+              <Link
+                href="/login"
+                className="hover:text-foreground transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-md border border-border bg-card px-3 py-1.5 text-foreground hover:border-accent hover:text-accent transition-colors"
+              >
+                Register
+              </Link>
+            </>
           )}
         </nav>
       </div>

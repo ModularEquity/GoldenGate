@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getAppUrl } from "@/lib/app-url";
 import { sendWelcomeMagicLink } from "@/lib/email";
-import { generateRawToken, hashToken } from "@/lib/tokens";
+import { createMagicLinkToken } from "@/lib/magic-link";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,21 +25,7 @@ export async function POST(request: Request) {
       update: {},
     });
 
-    await prisma.magicLinkToken.deleteMany({
-      where: { userId: user.id, usedAt: null },
-    });
-
-    const rawToken = generateRawToken();
-    const tokenHash = hashToken(rawToken);
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-    await prisma.magicLinkToken.create({
-      data: {
-        tokenHash,
-        userId: user.id,
-        expiresAt,
-      },
-    });
+    const { rawToken } = await createMagicLinkToken(user.id, "SET_PASSWORD");
 
     const base = getAppUrl();
     const magicLinkUrl = `${base}/set-password?token=${encodeURIComponent(rawToken)}`;
