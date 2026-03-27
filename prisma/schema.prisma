@@ -49,6 +49,10 @@ model User {
   manualBankAccounts ManualBankAccount[]
   fundingIntents  FundingIntent[]
   dealSubscriptions DealSubscription[]
+  /** Unique share/referral code for invite links (investors) */
+  referralCode    String?  @unique
+  /** Referral code used at signup (?ref=), if any */
+  referredByCode  String?
 }
 
 model Account {

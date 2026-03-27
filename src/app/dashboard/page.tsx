@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+import { ClaimReferralOnDashboard } from "@/components/ClaimReferralOnDashboard";
 import {
   userOnboardingSelect,
   countOutstandingOnboarding,
@@ -81,6 +82,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-10">
+      <ClaimReferralOnDashboard />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">
           {isEmployee ? "Employee hub" : "Investor hub"}

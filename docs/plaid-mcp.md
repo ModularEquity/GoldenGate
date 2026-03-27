@@ -2,6 +2,10 @@
 
 Use Plaid’s **Dashboard MCP** in Cursor to ask questions about your integration, troubleshoot Link issues, and browse Plaid docs from the IDE.
 
+## In-repo Plaid summary
+
+See **[docs/plaid-reference.md](./plaid-reference.md)** for how this app uses Link, Auth, env vars, and pointers to official Plaid docs.
+
 ## Official docs
 
 - **[Plaid MCP resources](https://www.plaid.com/docs/resources/mcp/)** — setup, OAuth, and supported clients (Cursor, VS Code, Claude Desktop, etc.).

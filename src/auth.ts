@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { authConfig } from "@/auth.config";
 import { roleFromEmail } from "@/lib/roles";
 import { getAuthSecret } from "@/lib/auth-secret";
+import { generateReferralCode } from "@/lib/referral-code";
 
 /**
  * OAuth redirect_uri must match Google Console exactly. On custom domains,
@@ -92,11 +93,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   events: {
     async createUser({ user }) {
       const role = roleFromEmail(user.email);
+      let referralCode = generateReferralCode();
+      for (let i = 0; i < 10; i++) {
+        const clash = await prisma.user.findUnique({
+          where: { referralCode },
+        });
+        if (!clash) break;
+        referralCode = generateReferralCode();
+      }
       await prisma.user.update({
         where: { id: user.id },
         data: {
           role,
           emailVerified: user.email ? new Date() : undefined,
+          referralCode,
         },
       });
     },

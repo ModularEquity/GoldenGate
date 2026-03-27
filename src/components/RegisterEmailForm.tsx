@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
-export function RegisterEmailForm() {
+function RegisterEmailFormInner() {
+  const searchParams = useSearchParams();
+  const ref = searchParams.get("ref")?.trim() ?? "";
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -16,7 +19,7 @@ export function RegisterEmailForm() {
       const res = await fetch("/api/register-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, ...(ref ? { ref } : {}) }),
       });
       const data = (await res.json()) as {
         ok?: boolean;
@@ -103,5 +106,13 @@ export function RegisterEmailForm() {
         </p>
       ) : null}
     </form>
+  );
+}
+
+export function RegisterEmailForm() {
+  return (
+    <Suspense fallback={<div className="h-40 animate-pulse rounded-xl bg-card" />}>
+      <RegisterEmailFormInner />
+    </Suspense>
   );
 }

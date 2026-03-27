@@ -1,19 +1,21 @@
 /**
- * Base URL for magic links (server-side).
- *
- * On Vercel you do **not** need APP_URL: `VERCEL_URL` is injected automatically
- * (stable production hostname). Optional APP_URL / NEXT_PUBLIC_APP_URL only if
- * you must force a different canonical URL (e.g. custom domain).
+ * Canonical public site URL for share links, emails, redirects.
+ * Prefer NEXT_PUBLIC_APP_URL in production (e.g. https://modularequity.com).
  */
-export function getAppUrl(): string {
-  if (process.env.APP_URL) {
-    return process.env.APP_URL.replace(/\/$/, "");
+export function getPublicAppUrl(): string {
+  const fromEnv =
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    process.env.APP_URL?.trim() ||
+    process.env.AUTH_URL?.trim();
+  if (fromEnv) {
+    return fromEnv.replace(/\/$/, "");
   }
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
+  const v = process.env.VERCEL_URL?.trim();
+  if (v) {
+    return v.startsWith("http") ? v.replace(/\/$/, "") : `https://${v}`;
   }
   return "http://localhost:3000";
 }
+
+/** @deprecated Use getPublicAppUrl — kept for existing imports */
+export const getAppUrl = getPublicAppUrl;

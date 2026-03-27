@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RegisterEmailForm } from "@/components/RegisterEmailForm";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { RegisterReferralCapture } from "@/components/RegisterReferralCapture";
 
 export const metadata = {
   title: "Register — Modular Equity",
@@ -10,6 +11,7 @@ export const metadata = {
 export default function RegisterPage() {
   return (
     <div className="mx-auto max-w-lg space-y-8">
+      <RegisterReferralCapture />
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">
           Create your investor profile

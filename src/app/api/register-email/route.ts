@@ -4,14 +4,17 @@ import { getAppUrl } from "@/lib/app-url";
 import { sendWelcomeMagicLink } from "@/lib/email";
 import { createMagicLinkToken } from "@/lib/magic-link";
 import { roleFromEmail } from "@/lib/roles";
+import { ensureUserReferralCode } from "@/lib/ensure-referral-code";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { email?: string };
+    const body = (await request.json()) as { email?: string; ref?: string };
     const raw = typeof body.email === "string" ? body.email.trim() : "";
     const email = raw.toLowerCase();
+    const refRaw =
+      typeof body.ref === "string" ? body.ref.trim().toUpperCase() : "";
 
     if (!email || !EMAIL_RE.test(email)) {
       return NextResponse.json(
@@ -26,6 +29,21 @@ export async function POST(request: Request) {
       create: { email, role },
       update: { role },
     });
+
+    if (refRaw && !user.referredByCode) {
+      const referrer = await prisma.user.findFirst({
+        where: { referralCode: refRaw },
+        select: { id: true },
+      });
+      if (referrer && referrer.id !== user.id) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { referredByCode: refRaw },
+        });
+      }
+    }
+
+    await ensureUserReferralCode(user.id);
 
     const { rawToken } = await createMagicLinkToken(user.id, "SET_PASSWORD");
 

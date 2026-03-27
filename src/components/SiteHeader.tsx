@@ -30,6 +30,12 @@ export async function SiteHeader() {
               >
                 FAQ
               </Link>
+              <Link
+                href="/dashboard/profile"
+                className="hover:text-foreground transition-colors"
+              >
+                Profile
+              </Link>
               {isEmployee ? (
                 <Link
                   href="/dashboard/team"

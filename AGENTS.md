@@ -2,6 +2,8 @@
 
 Guidance for AI coding agents and contributors working on this repository.
 
+**Architecture & context routing:** see **[ARCHITECTURE.md](./ARCHITECTURE.md)** — use it to decide which files/docs to load for a task.
+
 ## Product context
 
 **Modular Equity** is a **private equity** firm raising capital for **real estate projects**, with a primary focus on **renovations (fix-and-flip)**. The product is investor-facing: onboarding, compliance documents, deal review, subscription, and funding.

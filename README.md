@@ -10,6 +10,8 @@ Private equity platform for **real estate renovations (fix-and-flip)** — inves
 
 See **[AGENTS.md](./AGENTS.md)** for the full investor journey, conventions, and screen map.
 
+**Architecture & AI context routing:** **[ARCHITECTURE.md](./ARCHITECTURE.md)** — system map, which docs to load per task, referrals, integrations.
+
 ## Flow diagram
 
 Versioned Mermaid diagram: [docs/flow.md](./docs/flow.md). Use **Figma** or **Lucidchart** for high-fidelity UI mockups of the same flow.
