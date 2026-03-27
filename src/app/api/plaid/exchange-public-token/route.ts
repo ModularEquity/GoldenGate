@@ -61,20 +61,48 @@ export async function POST(request: Request) {
     const institutionName =
       instRes?.data.institution?.name ?? instId ?? null;
 
-    await prisma.plaidAccount.create({
-      data: {
-        userId: session.user.id,
-        itemId: item_id,
-        accessToken: access_token,
-        institutionName,
-        accountId: primary.account_id,
-        mask: primary.mask ?? null,
-        name: primary.name ?? null,
-        subtype: primary.subtype ?? null,
-      },
+    /** Auth product: confirms we can retrieve ACH routing/account for this account */
+    let verificationStatus: "LINKED" | "OWNERSHIP_VERIFIED" = "LINKED";
+    try {
+      const authRes = await plaid.authGet({
+        access_token,
+        options: { account_ids: [primary.account_id] },
+      });
+      const achForAccount = authRes.data.numbers.ach?.some(
+        (n) => n.account_id === primary.account_id,
+      );
+      if (achForAccount) {
+        verificationStatus = "OWNERSHIP_VERIFIED";
+      }
+    } catch (authErr) {
+      console.warn("[plaid auth/get]", authErr);
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.plaidAccount.create({
+        data: {
+          userId: session.user.id,
+          itemId: item_id,
+          accessToken: access_token,
+          institutionName,
+          accountId: primary.account_id,
+          mask: primary.mask ?? null,
+          name: primary.name ?? null,
+          subtype: primary.subtype ?? null,
+          verificationStatus,
+        },
+      });
+      await tx.user.update({
+        where: { id: session.user.id },
+        data: { bankLinkedAt: new Date() },
+      });
     });
 
-    return NextResponse.json({ ok: true, accountId: primary.account_id });
+    return NextResponse.json({
+      ok: true,
+      accountId: primary.account_id,
+      verificationStatus,
+    });
   } catch (e) {
     console.error("[plaid exchange]", e);
     return NextResponse.json(

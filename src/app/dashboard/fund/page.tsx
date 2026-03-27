@@ -79,8 +79,9 @@ export default async function FundPage() {
             <PlaidLinkButton />
           ) : (
             <p className="text-sm text-muted">
-              Plaid is not configured (missing{" "}
-              <code className="rounded bg-background px-1">PLAID_CLIENT_ID</code> /{" "}
+              Plaid is not configured (set{" "}
+              <code className="rounded bg-background px-1">PLAID_CLIENT_ID</code> and{" "}
+              <code className="rounded bg-background px-1">PLAID_API_SECRET</code> or{" "}
               <code className="rounded bg-background px-1">PLAID_SECRET</code>).
             </p>
           )}

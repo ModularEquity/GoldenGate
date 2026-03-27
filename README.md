@@ -56,4 +56,4 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 | `APP_URL` | *Optional* — magic-link base URL; else **`VERCEL_URL`** |
 | `EMAIL_FROM` | *Optional* — override default `Modular Equity <noreply@modularequity.com>` |
 
-**Plaid:** `PLAID_CLIENT_ID`, `PLAID_SECRET`, optional `PLAID_ENV`. See `docs/plaid-mcp.md`.
+**Plaid:** `PLAID_CLIENT_ID`, `PLAID_SECRET` or **`PLAID_API_SECRET`** (same value), optional `PLAID_ENV` (`sandbox` / `production`). See `docs/plaid-mcp.md`.

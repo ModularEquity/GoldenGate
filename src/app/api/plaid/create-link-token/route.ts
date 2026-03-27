@@ -25,7 +25,7 @@ export async function POST() {
     const res = await plaid.linkTokenCreate({
       user: { client_user_id: session.user.id },
       client_name: "Modular Equity",
-      products: [Products.Transactions],
+      products: [Products.Auth, Products.Transactions],
       country_codes: [CountryCode.Us],
       language: "en",
     });

@@ -28,6 +28,7 @@ model User {
   image           String?
   role            UserRole         @default(INVESTOR)
   passwordHash    String?
+  bankLinkedAt    DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   accounts        Account[]
@@ -89,17 +90,19 @@ model Wallet {
 }
 
 model PlaidAccount {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  itemId          String
-  accessToken     String
-  institutionName String?
-  accountId       String
-  mask            String?
-  name            String?
-  subtype         String?
-  createdAt       DateTime @default(now())
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId              String
+  accessToken         String
+  institutionName     String?
+  accountId           String
+  mask                String?
+  name                String?
+  subtype             String?
+  /** LINKED | OWNERSHIP_VERIFIED — set after Auth numbers match */
+  verificationStatus String   @default("LINKED")
+  createdAt           DateTime @default(now())
 
   fundingIntents FundingIntent[]
 

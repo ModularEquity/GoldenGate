@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 
 export const metadata = {
   title: "Dashboard — Modular Equity",
@@ -48,6 +50,23 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      passwordHash: true,
+      bankLinkedAt: true,
+      accounts: {
+        where: { provider: "google" },
+        take: 1,
+        select: { id: true },
+      },
+    },
+  });
+
+  const hasGoogle = (dbUser?.accounts.length ?? 0) > 0;
+  const signInComplete =
+    Boolean(dbUser?.passwordHash) || hasGoogle;
+
   const role = session.user.role;
   const isEmployee = role === "EMPLOYEE";
 
@@ -76,6 +95,14 @@ export default async function DashboardPage() {
           will connect here as we wire production flows.
         </p>
       </div>
+
+      {!isEmployee ? (
+        <OnboardingChecklist
+          email={session.user.email ?? ""}
+          signInComplete={signInComplete}
+          bankLinked={Boolean(dbUser?.bankLinkedAt)}
+        />
+      ) : null}
 
       <div className="grid gap-6 sm:grid-cols-2">
         {sections.map((section) => (

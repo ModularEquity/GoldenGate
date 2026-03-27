@@ -60,7 +60,7 @@ export function PlaidLinkButton() {
       if (!res.ok) {
         if (data.code === "PLAID_NOT_CONFIGURED") {
           setMsg(
-            "Plaid is not configured. Add PLAID_CLIENT_ID, PLAID_SECRET, and PLAID_ENV=Sandbox in Vercel.",
+            "Plaid is not configured. Add PLAID_CLIENT_ID and PLAID_API_SECRET (or PLAID_SECRET) in Vercel. Use PLAID_ENV=sandbox or production.",
           );
           return;
         }
