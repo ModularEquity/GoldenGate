@@ -82,4 +82,6 @@ Open `http://localhost:3000`. Build: `npm run build`.
 - **Magic link** with purpose: `SET_PASSWORD` (welcome) vs `RESET_PASSWORD` (forgot flow); 24h TTL; **bcrypt** for passwords.
 - **Email**: `RESEND_API_KEY`; default `From` is `Modular Equity <noreply@modularequity.com>`. See `docs/resend-and-production.md`.
 
+**Onboarding tracking:** `User` fields `investorProfileCompletedAt`, `ppmRiskCompletedAt`, `taxCompletedAt`, `wireInstructionsAcknowledgedAt`; sub-routes under `/dashboard/onboarding/*`; dashboard shows **outstanding count**; incomplete steps use **red borders** on the onboarding overview. **Manual bank** (`ManualBankAccount`, last-4 routing/account) on Fund page alongside Plaid.
+
 Still incremental: Plaid/Mercury/DocSign, Postgres migration for production.

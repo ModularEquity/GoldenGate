@@ -11,6 +11,14 @@ type PlaidAcc = {
   subtype: string | null;
 };
 
+type ManualAcc = {
+  id: string;
+  institutionName: string;
+  nickname: string | null;
+  routingLast4: string;
+  accountLast4: string;
+};
+
 type Intent = {
   id: string;
   amountCents: number;
@@ -22,14 +30,17 @@ type Intent = {
 
 export function FundSection({
   plaidAccounts,
+  manualAccounts,
   intents,
 }: {
   plaidAccounts: PlaidAcc[];
+  manualAccounts: ManualAcc[];
   intents: Intent[];
 }) {
   const router = useRouter();
   const [dollars, setDollars] = useState("");
   const [plaidAccountId, setPlaidAccountId] = useState("");
+  const [manualBankAccountId, setManualBankAccountId] = useState("");
   const [note, setNote] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -53,6 +64,7 @@ export function FundSection({
         body: JSON.stringify({
           amountCents,
           plaidAccountId: plaidAccountId || null,
+          manualBankAccountId: manualBankAccountId || null,
           note: note || undefined,
         }),
       });
@@ -68,6 +80,8 @@ export function FundSection({
       setMsg(data.message ?? "Recorded.");
       setDollars("");
       setNote("");
+      setPlaidAccountId("");
+      setManualBankAccountId("");
       router.refresh();
     } catch {
       setErr("Network error.");
@@ -104,23 +118,49 @@ export function FundSection({
             />
           </div>
 
-          {plaidAccounts.length > 0 ? (
+          {plaidAccounts.length + manualAccounts.length > 0 ? (
             <div className="space-y-2">
               <label htmlFor="bank" className="text-sm font-medium">
-                Linked bank (optional)
+                Bank for this request (optional)
               </label>
               <select
                 id="bank"
-                value={plaidAccountId}
-                onChange={(e) => setPlaidAccountId(e.target.value)}
+                value={
+                  plaidAccountId
+                    ? `plaid:${plaidAccountId}`
+                    : manualBankAccountId
+                      ? `manual:${manualBankAccountId}`
+                      : ""
+                }
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (!v) {
+                    setPlaidAccountId("");
+                    setManualBankAccountId("");
+                    return;
+                  }
+                  if (v.startsWith("plaid:")) {
+                    setPlaidAccountId(v.slice(6));
+                    setManualBankAccountId("");
+                  } else {
+                    setManualBankAccountId(v.slice(7));
+                    setPlaidAccountId("");
+                  }
+                }}
                 className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm"
               >
                 <option value="">— None —</option>
                 {plaidAccounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.institutionName ?? "Bank"}{" "}
+                  <option key={a.id} value={`plaid:${a.id}`}>
+                    Plaid: {a.institutionName ?? "Bank"}{" "}
                     {a.mask ? `·•••${a.mask}` : ""}{" "}
                     {a.name ? `(${a.name})` : ""}
+                  </option>
+                ))}
+                {manualAccounts.map((a) => (
+                  <option key={a.id} value={`manual:${a.id}`}>
+                    Manual: {a.nickname ? `${a.nickname} · ` : ""}
+                    {a.institutionName} ·•••{a.routingLast4}/••••{a.accountLast4}
                   </option>
                 ))}
               </select>

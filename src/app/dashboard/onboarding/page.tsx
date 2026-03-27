@@ -1,7 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
 import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
+import {
+  getOnboardingSteps,
+  userOnboardingSelect,
+  countOutstandingOnboarding,
+  hasBankLinked,
+} from "@/lib/onboarding-status";
+import { OnboardingStepCard } from "@/components/OnboardingStepCard";
+import { CompleteStepButton } from "@/components/CompleteStepButton";
 
 export const metadata = {
   title: "Onboarding — Modular Equity",
@@ -13,6 +22,16 @@ const docLinkClass =
 export default async function OnboardingPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: userOnboardingSelect,
+  });
+  if (!user) redirect("/login");
+
+  const steps = getOnboardingSteps(user);
+  const outstanding = countOutstandingOnboarding(user);
+  const bankLinked = hasBankLinked(user);
 
   return (
     <div className="space-y-8">
@@ -27,15 +46,25 @@ export default async function OnboardingPage() {
           Investor onboarding
         </h1>
         <p className="mt-2 text-muted">
-          DocSign flows for questionnaire, tax, and wire/ACH forms will
-          connect here. Below are quick links to Google Docs and Drive
-          materials.
+          Complete each step below. DocSign flows for questionnaire, tax, and
+          signatures will connect here.{" "}
+          {outstanding > 0 ? (
+            <span className="font-medium text-red-600 dark:text-red-400">
+              {outstanding} item{outstanding === 1 ? "" : "s"} outstanding
+            </span>
+          ) : (
+            <span className="font-medium text-green-600 dark:text-green-400">
+              All onboarding steps complete
+            </span>
+          )}
         </p>
       </div>
 
-      <div className="rounded-xl border border-accent/30 bg-card p-6">
-        <h2 className="font-medium text-foreground">Google Docs & Drive</h2>
-        <ul className="mt-3 space-y-2 text-sm">
+      <div className="rounded-xl border border-border bg-card/50 p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-accent">
+          Google Docs & Drive
+        </h2>
+        <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           <li>
             <a
               href={INVESTOR_GOOGLE_DOCS.ppm}
@@ -43,7 +72,7 @@ export default async function OnboardingPage() {
               rel="noopener noreferrer"
               className={docLinkClass}
             >
-              PPM (Private Placement Memorandum) — Google Doc ↗
+              PPM — Google Doc ↗
             </a>
           </li>
           <li>
@@ -69,67 +98,107 @@ export default async function OnboardingPage() {
         </ul>
       </div>
 
-      <div className="space-y-2 rounded-xl border border-border bg-card p-6">
-        <h2 className="font-medium text-foreground">Register investor account</h2>
-        <p className="text-sm text-muted">
-          Legal entity profile, accreditation, and subscription eligibility —
-          DocSign placeholder.
-        </p>
-      </div>
-
-      <div
-        id="ppm"
-        className="space-y-2 scroll-mt-24 rounded-xl border border-border bg-card p-6"
-      >
-        <h2 className="font-medium text-foreground">PPM & risk (read / sign)</h2>
-        <p className="text-sm text-muted">
-          Review the PPM and risk disclosures. DocSign acknowledgements will be
-          tracked here.
-        </p>
-        <a
-          href={INVESTOR_GOOGLE_DOCS.ppm}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={docLinkClass}
+      <div className="grid gap-5 lg:grid-cols-2">
+        <OnboardingStepCard
+          complete={steps[0]!.complete}
+          title="Register investor account"
+          description="Legal entity profile, accreditation, and subscription eligibility — open the full screen to confirm."
         >
-          Open PPM ↗
-        </a>
-        {" · "}
-        <a
-          href={INVESTOR_GOOGLE_DOCS.riskDisclosures}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={docLinkClass}
+          <Link
+            href="/dashboard/onboarding/register"
+            className="inline-flex text-sm font-medium text-accent hover:underline"
+          >
+            Open register investor account →
+          </Link>
+          <div className="mt-4">
+            <CompleteStepButton
+              step="investorProfile"
+              complete={steps[0]!.complete}
+            />
+          </div>
+        </OnboardingStepCard>
+
+        <OnboardingStepCard
+          complete={steps[1]!.complete}
+          title="PPM & risk (read / sign)"
+          description="Review the PPM and risk disclosures. DocSign acknowledgements will be tracked when integrated."
         >
-          Open risk disclosures ↗
-        </a>
-      </div>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href={INVESTOR_GOOGLE_DOCS.ppm}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={docLinkClass}
+            >
+              Open PPM ↗
+            </a>
+            <a
+              href={INVESTOR_GOOGLE_DOCS.riskDisclosures}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={docLinkClass}
+            >
+              Open risk disclosures ↗
+            </a>
+          </div>
+          <Link
+            href="/dashboard/onboarding/ppm-risk"
+            className="mt-3 inline-flex text-sm font-medium text-accent hover:underline"
+          >
+            Full PPM & risk screen →
+          </Link>
+          <div className="mt-4">
+            <CompleteStepButton
+              step="ppmRisk"
+              complete={steps[1]!.complete}
+            />
+          </div>
+        </OnboardingStepCard>
 
-      <div
-        id="tax"
-        className="space-y-2 scroll-mt-24 rounded-xl border border-border bg-card p-6"
-      >
-        <h2 className="font-medium text-foreground">Tax — W-9 / W-8BEN / W-8BEN-E</h2>
-        <p className="text-sm text-muted">
-          DocSign collection for US and non-US tax forms — placeholder.
-        </p>
-      </div>
+        <OnboardingStepCard
+          complete={steps[2]!.complete}
+          title="Tax — W-9 / W-8BEN / W-8BEN-E"
+          description="DocSign collection for US and non-US tax forms."
+        >
+          <Link
+            href="/dashboard/onboarding/tax"
+            className="inline-flex text-sm font-medium text-accent hover:underline"
+          >
+            Open tax forms screen →
+          </Link>
+          <div className="mt-4">
+            <CompleteStepButton step="tax" complete={steps[2]!.complete} />
+          </div>
+        </OnboardingStepCard>
 
-      <div
-        id="banking"
-        className="space-y-2 scroll-mt-24 rounded-xl border border-border bg-card p-6"
-      >
-        <h2 className="font-medium text-foreground">
-          Wire / ACH — routing, account, Plaid
-        </h2>
-        <p className="text-sm text-muted">
-          Wire and ACH instructions (Mercury) and bank verification via Plaid.
-          Save linked accounts on the{" "}
-          <Link href="/dashboard/fund" className="text-accent hover:underline">
-            Fund
-          </Link>{" "}
-          page after connecting Plaid.
-        </p>
+        <OnboardingStepCard
+          complete={steps[3]!.complete}
+          title="Wire / ACH — routing, account, Plaid"
+          description={
+            <>
+              Wire and ACH instructions (Mercury) and bank verification via Plaid
+              or manual reference. Use the{" "}
+              <Link href="/dashboard/fund" className="text-accent hover:underline">
+                Fund
+              </Link>{" "}
+              page to add a bank account.
+            </>
+          }
+        >
+          <Link
+            href="/dashboard/onboarding/banking"
+            className="inline-flex text-sm font-medium text-accent hover:underline"
+          >
+            Open wire & banking screen →
+          </Link>
+          <div className="mt-4">
+            <CompleteStepButton
+              step="banking"
+              complete={steps[3]!.complete}
+              disabled={!bankLinked}
+            />
+          </div>
+        </OnboardingStepCard>
       </div>
     </div>
   );

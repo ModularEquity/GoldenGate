@@ -12,7 +12,7 @@ const toc = [
   { id: "getting-started", label: "Getting started" },
   { id: "onboarding", label: "Onboarding & documents" },
   { id: "deals-funding", label: "Deals & funding" },
-  { id: "bank-wallet", label: "Bank link & wallets" },
+  { id: "bank-wallet", label: "Bank link & funding" },
   { id: "security", label: "Security & compliance" },
 ];
 
@@ -77,7 +77,7 @@ const faqSections: {
         id: "df-2",
         question: "How does funding work?",
         answer:
-          "After subscribing to a deal (DocSign), you can record a funding request on the Fund page. Link a bank account with Plaid first. Live ACH debits require Plaid Transfer or Stripe — we log commitments for operations today.",
+          "After subscribing to a deal (DocSign), you can record a funding request on the Fund page. Link a bank account with Plaid or add a manual bank reference (last 4 digits). Live ACH debits require Plaid Transfer or Stripe — we log commitments for operations today.",
       },
       {
         id: "df-3",
@@ -89,7 +89,7 @@ const faqSections: {
   },
   {
     tocId: "bank-wallet",
-    title: "Bank link & wallets",
+    title: "Bank link & funding",
     items: [
       {
         id: "bw-1",
@@ -99,9 +99,9 @@ const faqSections: {
       },
       {
         id: "bw-2",
-        question: "What is “Add a wallet”?",
+        question: "Can I add my bank without Plaid?",
         answer:
-          "You can save a crypto wallet address (e.g. for future distributions or on-chain references). Modular Equity does not custody assets; you control your keys.",
+          "Yes. On the Fund page you can enter the last four digits of your routing and account numbers for operations reference. For verified ACH, Plaid is recommended.",
       },
     ],
   },
@@ -144,38 +144,53 @@ export default async function FaqPage() {
         </p>
       </div>
 
-      <nav
-        aria-label="Table of contents"
-        className="rounded-xl border border-border bg-card p-6"
-      >
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-accent">
-          On this page
-        </h2>
-        <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm">
-          {toc.map((t) => (
-            <li key={t.id}>
-              <a href={`#${t.id}`} className="text-accent hover:underline">
-                {t.label}
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,220px)_1fr]">
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <nav
+            aria-label="Table of contents"
+            className="rounded-xl border border-border bg-card p-5 shadow-sm"
+          >
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-accent">
+              On this page
+            </h2>
+            <ul className="mt-3 space-y-2 text-sm">
+              {toc.map((t) => (
+                <li key={t.id}>
+                  <a
+                    href={`#${t.id}`}
+                    className="text-foreground/90 hover:text-accent hover:underline"
+                  >
+                    {t.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
 
-      {faqSections.map((section) => (
-        <section key={section.tocId} id={section.tocId} className="scroll-mt-24">
-          <h2 className="text-xl font-semibold text-foreground">{section.title}</h2>
-          <div className="mt-4">
-            <FaqAccordion
-              items={section.items.map((i) => ({
-                id: i.id,
-                question: i.question,
-                answer: <p>{i.answer}</p>,
-              }))}
-            />
-          </div>
-        </section>
-      ))}
+        <div className="min-w-0 space-y-12">
+          {faqSections.map((section) => (
+            <section
+              key={section.tocId}
+              id={section.tocId}
+              className="scroll-mt-28"
+            >
+              <h2 className="border-b border-border pb-2 text-xl font-semibold text-foreground">
+                {section.title}
+              </h2>
+              <div className="mt-5">
+                <FaqAccordion
+                  items={section.items.map((i) => ({
+                    id: i.id,
+                    question: i.question,
+                    answer: <p>{i.answer}</p>,
+                  }))}
+                />
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

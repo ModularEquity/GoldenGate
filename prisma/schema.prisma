@@ -29,6 +29,14 @@ model User {
   role            UserRole         @default(INVESTOR)
   passwordHash    String?
   bankLinkedAt    DateTime?
+  /** Investor questionnaire / entity profile (onboarding step 1) */
+  investorProfileCompletedAt DateTime?
+  /** PPM & risk disclosures acknowledged */
+  ppmRiskCompletedAt         DateTime?
+  /** W-9 / W-8 tax path submitted */
+  taxCompletedAt             DateTime?
+  /** Mercury wire instructions read (optional without bank link) */
+  wireInstructionsAcknowledgedAt DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   accounts        Account[]
@@ -36,6 +44,7 @@ model User {
   magicLinkTokens MagicLinkToken[]
   wallets         Wallet[]
   plaidAccounts   PlaidAccount[]
+  manualBankAccounts ManualBankAccount[]
   fundingIntents  FundingIntent[]
 }
 
@@ -89,6 +98,22 @@ model Wallet {
   @@index([userId])
 }
 
+/** User-entered bank reference (last-4 only); use Plaid for verified ACH */
+model ManualBankAccount {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nickname        String?
+  institutionName String
+  accountType     String   @default("checking")
+  routingLast4    String
+  accountLast4    String
+  createdAt       DateTime @default(now())
+  fundingIntents  FundingIntent[]
+
+  @@index([userId])
+}
+
 model PlaidAccount {
   id                  String   @id @default(cuid())
   userId              String
@@ -124,6 +149,8 @@ model FundingIntent {
   currency       String         @default("USD")
   plaidAccountId String?
   plaidAccount   PlaidAccount?  @relation(fields: [plaidAccountId], references: [id], onDelete: SetNull)
+  manualBankAccountId String?
+  manualBankAccount   ManualBankAccount? @relation(fields: [manualBankAccountId], references: [id], onDelete: SetNull)
   status         FundingStatus  @default(PENDING)
   note           String?
   createdAt      DateTime       @default(now())

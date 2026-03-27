@@ -4,12 +4,14 @@ type Props = {
   signInComplete: boolean;
   bankLinked: boolean;
   email: string;
+  outstandingOnboarding: number;
 };
 
 export function OnboardingChecklist({
   signInComplete,
   bankLinked,
   email,
+  outstandingOnboarding,
 }: Props) {
   const steps: { done: boolean; label: string; href?: string }[] = [
     {
@@ -22,12 +24,12 @@ export function OnboardingChecklist({
     },
     {
       done: bankLinked,
-      label: "Bank account linked & verified (Plaid)",
+      label: "Bank account on file (Plaid or manual reference)",
       href: "/dashboard/fund",
     },
     {
-      done: false,
-      label: "Review onboarding docs & deals",
+      done: outstandingOnboarding === 0,
+      label: "Onboarding steps (register, PPM, tax, wire/ACH)",
       href: "/dashboard/onboarding",
     },
   ];
@@ -39,7 +41,7 @@ export function OnboardingChecklist({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-semibold text-foreground">Your setup checklist</h2>
         <span className="text-xs text-muted">
-          {completeCount}/{steps.length} started
+          {completeCount}/{steps.length} complete
         </span>
       </div>
       <p className="mt-1 text-sm text-muted">
@@ -72,6 +74,11 @@ export function OnboardingChecklist({
                   {step.label}
                 </span>
               )}
+              {step.label.includes("Onboarding") && outstandingOnboarding > 0 ? (
+                <span className="ml-2 rounded-md border border-red-500/50 bg-red-500/10 px-2 py-0.5 text-xs font-semibold text-red-700 dark:text-red-300">
+                  {outstandingOnboarding} left
+                </span>
+              ) : null}
             </div>
           </li>
         ))}
@@ -80,9 +87,20 @@ export function OnboardingChecklist({
         <p className="mt-4 text-sm text-muted">
           Next:{" "}
           <Link href="/dashboard/fund" className="text-accent hover:underline">
-            Link your bank with Plaid
+            Add a bank account
           </Link>{" "}
-          to verify account ownership for ACH funding.
+          (Plaid or manual last-4 reference).
+        </p>
+      ) : outstandingOnboarding > 0 ? (
+        <p className="mt-4 text-sm text-muted">
+          Next:{" "}
+          <Link
+            href="/dashboard/onboarding"
+            className="text-accent hover:underline"
+          >
+            Finish onboarding ({outstandingOnboarding} step
+            {outstandingOnboarding === 1 ? "" : "s"} outstanding)
+          </Link>
         </p>
       ) : null}
     </section>

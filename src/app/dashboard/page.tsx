@@ -3,6 +3,11 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+import {
+  userOnboardingSelect,
+  countOutstandingOnboarding,
+  hasBankLinked,
+} from "@/lib/onboarding-status";
 
 export const metadata = {
   title: "Dashboard — Modular Equity",
@@ -15,10 +20,11 @@ const sections = [
     description:
       "Register your investor account, questionnaire, PPM, risk disclosures, tax forms, and wire/ACH instructions (DocSign).",
     links: [
-      { href: "/dashboard/onboarding", label: "Investor onboarding & questionnaire" },
-      { href: "/dashboard/onboarding#ppm", label: "PPM & risk disclosures" },
-      { href: "/dashboard/onboarding#tax", label: "W-9 / W-8 tax forms" },
-      { href: "/dashboard/onboarding#banking", label: "Wire / ACH instructions (Mercury)" },
+      { href: "/dashboard/onboarding", label: "Investor onboarding overview" },
+      { href: "/dashboard/onboarding/register", label: "Register investor account" },
+      { href: "/dashboard/onboarding/ppm-risk", label: "PPM & risk disclosures" },
+      { href: "/dashboard/onboarding/tax", label: "W-9 / W-8 tax forms" },
+      { href: "/dashboard/onboarding/banking", label: "Wire / ACH & banking" },
     ],
   },
   {
@@ -39,7 +45,7 @@ const sections = [
     description: "Execute subscription documents and fund via ACH.",
     links: [
       { href: "/dashboard/subscribe", label: "Subscribe to a deal (DocSign)" },
-      { href: "/dashboard/fund", label: "Fund deal — Plaid / ACH" },
+      { href: "/dashboard/fund", label: "Bank accounts & funding" },
     ],
   },
 ];
@@ -54,12 +60,12 @@ export default async function DashboardPage() {
     where: { id: session.user.id },
     select: {
       passwordHash: true,
-      bankLinkedAt: true,
       accounts: {
         where: { provider: "google" },
         take: 1,
         select: { id: true },
       },
+      ...userOnboardingSelect,
     },
   });
 
@@ -69,6 +75,9 @@ export default async function DashboardPage() {
 
   const role = session.user.role;
   const isEmployee = role === "EMPLOYEE";
+
+  const outstandingOnboarding =
+    dbUser && !isEmployee ? countOutstandingOnboarding(dbUser) : 0;
 
   return (
     <div className="space-y-10">
@@ -89,6 +98,22 @@ export default async function DashboardPage() {
             </span>
           )}
         </p>
+        {!isEmployee && outstandingOnboarding > 0 ? (
+          <p className="mt-3 inline-flex items-center gap-2 rounded-lg border-2 border-red-500/60 bg-red-500/5 px-4 py-2 text-sm font-medium text-red-800 dark:text-red-200">
+            <span className="inline-flex size-7 items-center justify-center rounded-full bg-red-600 text-sm font-bold text-white">
+              {outstandingOnboarding}
+            </span>
+            onboarding step{outstandingOnboarding === 1 ? "" : "s"} outstanding —{" "}
+            <Link href="/dashboard/onboarding" className="underline">
+              continue onboarding
+            </Link>
+          </p>
+        ) : null}
+        {!isEmployee && outstandingOnboarding === 0 && dbUser ? (
+          <p className="mt-3 text-sm font-medium text-green-700 dark:text-green-400">
+            ✓ All onboarding checklist items complete
+          </p>
+        ) : null}
         <p className="mt-3 max-w-2xl text-sm text-muted">
           Follow the steps below to complete onboarding, review documents and
           deals, then subscribe and fund. Integrations (DocSign, Plaid, Mercury)
@@ -100,7 +125,8 @@ export default async function DashboardPage() {
         <OnboardingChecklist
           email={session.user.email ?? ""}
           signInComplete={signInComplete}
-          bankLinked={Boolean(dbUser?.bankLinkedAt)}
+          bankLinked={dbUser ? hasBankLinked(dbUser) : false}
+          outstandingOnboarding={outstandingOnboarding}
         />
       ) : null}
 

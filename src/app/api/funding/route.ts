@@ -41,6 +41,7 @@ export async function POST(request: Request) {
   let body: {
     amountCents?: number;
     plaidAccountId?: string | null;
+    manualBankAccountId?: string | null;
     note?: string;
   };
   try {
@@ -62,6 +63,8 @@ export async function POST(request: Request) {
   }
 
   let plaidAccountId: string | null = null;
+  let manualBankAccountId: string | null = null;
+
   if (typeof body.plaidAccountId === "string" && body.plaidAccountId) {
     const acc = await prisma.plaidAccount.findFirst({
       where: { id: body.plaidAccountId, userId: session.user.id },
@@ -75,6 +78,26 @@ export async function POST(request: Request) {
     plaidAccountId = acc.id;
   }
 
+  if (typeof body.manualBankAccountId === "string" && body.manualBankAccountId) {
+    const m = await prisma.manualBankAccount.findFirst({
+      where: { id: body.manualBankAccountId, userId: session.user.id },
+    });
+    if (!m) {
+      return NextResponse.json(
+        { error: "Selected manual bank account not found." },
+        { status: 400 },
+      );
+    }
+    manualBankAccountId = m.id;
+  }
+
+  if (plaidAccountId && manualBankAccountId) {
+    return NextResponse.json(
+      { error: "Choose either a Plaid-linked account or a manually added account, not both." },
+      { status: 400 },
+    );
+  }
+
   const note =
     typeof body.note === "string" ? body.note.slice(0, 500) : undefined;
 
@@ -83,6 +106,7 @@ export async function POST(request: Request) {
       userId: session.user.id,
       amountCents,
       plaidAccountId,
+      manualBankAccountId,
       note,
       status: "COMPLETED",
     },
