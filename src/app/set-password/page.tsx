@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { SetPasswordForm } from "@/components/SetPasswordForm";
 
 export const metadata = {
-  title: "Set password — GoldenGate",
+  title: "Set password — Modular Equity",
   description: "Create your investor account password.",
 };
 

@@ -1,7 +1,7 @@
 import { LoginForm } from "@/components/LoginForm";
 
 export const metadata = {
-  title: "Sign in — GoldenGate",
+  title: "Sign in — Modular Equity",
   description: "Sign in to your investor account.",
 };
 

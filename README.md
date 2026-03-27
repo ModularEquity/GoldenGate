@@ -1,4 +1,4 @@
-# GoldenGate
+# Modular Equity (investor portal)
 
 Private equity platform for **real estate renovations (fix-and-flip)** — investor onboarding, deal review, and funding.
 
@@ -38,9 +38,9 @@ npm run build
 
 ### Email (Resend)
 
-On **Vercel** you only need **`RESEND_API_KEY`** (secret). **Do not** set `APP_URL` or `EMAIL_FROM` unless you want overrides: magic links use Vercel’s automatic **`VERCEL_URL`**, and the default sender is **`GoldenGate <noreply@modularequity.com>`** (your verified domain).
+On **Vercel** you only need **`RESEND_API_KEY`** (secret). **Do not** set `APP_URL` or `EMAIL_FROM` unless you want overrides: magic links use Vercel’s automatic **`VERCEL_URL`**, and the default sender is **`Modular Equity <noreply@modularequity.com>`** (your verified domain).
 
-See **[docs/resend-and-production.md](./docs/resend-and-production.md)** for production **Postgres** + **`AUTH_SECRET`**.
+See **[docs/resend-and-production.md](./docs/resend-and-production.md)** for **Postgres**, **`AUTH_SECRET`**, and **Google OAuth** (`AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`).
 
 Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal** (dev only).
 
@@ -50,9 +50,10 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 |----------|---------|
 | `goldengate_DATABASE_URL` | **PostgreSQL** pooled (Neon / Vercel — prefixed by integration) |
 | `goldengate_POSTGRES_URL_NON_POOLING` | **Direct** URL for migrations (local: same as pooled URL) |
-| `AUTH_SECRET` | JWT signing (min 32 chars) — **recommended** in production (fallback exists if unset) |
-| `RESEND_API_KEY` | Send welcome / magic-link email (**only email-related secret required**) |
-| `APP_URL` | *Optional* — force magic-link base URL (e.g. custom domain). If unset on Vercel, **`VERCEL_URL`** is used. |
-| `EMAIL_FROM` | *Optional* — override default `GoldenGate <noreply@modularequity.com>` |
+| `AUTH_SECRET` | **Required** in production for NextAuth (min 32 chars) |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google sign-in (register + login) |
+| `RESEND_API_KEY` | Transactional email (welcome / reset) |
+| `APP_URL` | *Optional* — magic-link base URL; else **`VERCEL_URL`** |
+| `EMAIL_FROM` | *Optional* — override default `Modular Equity <noreply@modularequity.com>` |
 
-**Plaid (bank link):** `PLAID_CLIENT_ID`, `PLAID_SECRET`, optional `PLAID_ENV` (`sandbox` default). See `docs/plaid-mcp.md` for Plaid Dashboard MCP in Cursor.
+**Plaid:** `PLAID_CLIENT_ID`, `PLAID_SECRET`, optional `PLAID_ENV`. See `docs/plaid-mcp.md`.

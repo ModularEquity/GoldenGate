@@ -1,5 +1,6 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -42,12 +43,29 @@ export function SetPasswordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        email?: string;
+      };
 
       if (!res.ok || !data.ok) {
         setStatus("error");
         setMessage(data.error ?? "Could not save password.");
         return;
+      }
+
+      if (data.email) {
+        const si = await signIn("credentials", {
+          email: data.email,
+          password,
+          redirect: false,
+        });
+        if (si?.error) {
+          setStatus("error");
+          setMessage("Password saved. Sign in from the login page.");
+          return;
+        }
       }
 
       router.push("/dashboard");
@@ -125,7 +143,7 @@ export function SetPasswordForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full rounded-md bg-accent py-2.5 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+        className="w-full rounded-md bg-accent py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
       >
         {status === "loading" ? "Saving…" : "Save password & continue"}
       </button>

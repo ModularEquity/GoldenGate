@@ -87,7 +87,7 @@ export function RegisterEmailForm() {
 
       <button
         type="submit"
-        className="w-full rounded-md bg-accent py-2.5 text-sm font-medium text-background hover:opacity-90"
+        className="w-full rounded-md bg-accent py-2.5 text-sm font-medium text-white hover:opacity-90"
       >
         Continue
       </button>

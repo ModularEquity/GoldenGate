@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { CountryCode } from "plaid";
 import { prisma } from "@/lib/db";
 import { getPlaidClient, isPlaidConfigured } from "@/lib/plaid-server";
-import { getSessionFromCookies } from "@/lib/auth-session";
+import { auth } from "@/auth";
 
 export async function POST(request: Request) {
-  const session = await getSessionFromCookies();
-  if (!session) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     await prisma.plaidAccount.create({
       data: {
-        userId: session.sub,
+        userId: session.user.id,
         itemId: item_id,
         accessToken: access_token,
         institutionName,

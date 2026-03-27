@@ -1,21 +1,22 @@
 import Link from "next/link";
-import { getSessionFromCookies } from "@/lib/auth-session";
+import { auth } from "@/auth";
 import { LogoutButton } from "@/components/LogoutButton";
 
 export async function SiteHeader() {
-  const session = await getSessionFromCookies();
+  const session = await auth();
+  const isEmployee = session?.user?.role === "EMPLOYEE";
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          GoldenGate
+        <Link href="/" className="text-lg font-semibold tracking-tight text-accent">
+          Modular Equity
         </Link>
         <nav className="flex items-center gap-6 text-sm text-muted">
           <Link href="/" className="hover:text-foreground transition-colors">
             Home
           </Link>
-          {session ? (
+          {session?.user ? (
             <>
               <Link
                 href="/dashboard"
@@ -29,6 +30,14 @@ export async function SiteHeader() {
               >
                 FAQ
               </Link>
+              {isEmployee ? (
+                <Link
+                  href="/dashboard/team"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Team
+                </Link>
+              ) : null}
               <LogoutButton />
             </>
           ) : (

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { CountryCode, Products } from "plaid";
+import { auth } from "@/auth";
 import { getPlaidClient, isPlaidConfigured } from "@/lib/plaid-server";
-import { getSessionFromCookies } from "@/lib/auth-session";
 
 export async function POST() {
-  const session = await getSessionFromCookies();
-  if (!session) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -23,8 +23,8 @@ export async function POST() {
 
   try {
     const res = await plaid.linkTokenCreate({
-      user: { client_user_id: session.sub },
-      client_name: "GoldenGate",
+      user: { client_user_id: session.user.id },
+      client_name: "Modular Equity",
       products: [Products.Transactions],
       country_codes: [CountryCode.Us],
       language: "en",

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSessionFromCookies } from "@/lib/auth-session";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { PlaidLinkButton } from "@/components/PlaidLinkButton";
 import { WalletSection } from "@/components/WalletSection";
@@ -8,20 +8,20 @@ import { FundSection } from "@/components/FundSection";
 import { isPlaidConfigured } from "@/lib/plaid-server";
 
 export const metadata = {
-  title: "Fund — GoldenGate",
+  title: "Fund — Modular Equity",
 };
 
 export default async function FundPage() {
-  const session = await getSessionFromCookies();
-  if (!session) redirect("/login");
+  const session = await auth();
+  if (!session?.user) redirect("/login");
 
   const [wallets, plaidAccounts, intents] = await Promise.all([
     prisma.wallet.findMany({
-      where: { userId: session.sub },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
     }),
     prisma.plaidAccount.findMany({
-      where: { userId: session.sub },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -32,7 +32,7 @@ export default async function FundPage() {
       },
     }),
     prisma.fundingIntent.findMany({
-      where: { userId: session.sub },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       take: 20,
     }),

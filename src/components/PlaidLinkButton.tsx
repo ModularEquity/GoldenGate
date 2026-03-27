@@ -84,7 +84,7 @@ export function PlaidLinkButton() {
         type="button"
         onClick={startLink}
         disabled={loading}
-        className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+        className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
       >
         {loading ? "Starting…" : "Link bank account (Plaid)"}
       </button>

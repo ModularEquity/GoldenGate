@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSessionFromCookies } from "@/lib/auth-session";
+import { auth } from "@/auth";
 import { FaqAccordion } from "@/components/FaqAccordion";
 
 export const metadata = {
-  title: "FAQ — GoldenGate",
+  title: "FAQ — Modular Equity",
 };
 
 const toc = [
@@ -29,7 +29,7 @@ const faqSections: {
         id: "gs-1",
         question: "How do I create an account?",
         answer:
-          "Register your email on the Register page. You’ll receive a link to set your password. After that, sign in from Login to reach your investor dashboard.",
+          "Use Register with Google or enter your email. With email, you’ll receive a link to set your password. Then sign in from Login (Google or password) to open your dashboard.",
       },
       {
         id: "gs-2",
@@ -101,7 +101,7 @@ const faqSections: {
         id: "bw-2",
         question: "What is “Add a wallet”?",
         answer:
-          "You can save a crypto wallet address (e.g. for future distributions or on-chain references). GoldenGate does not custody assets; you control your keys.",
+          "You can save a crypto wallet address (e.g. for future distributions or on-chain references). Modular Equity does not custody assets; you control your keys.",
       },
     ],
   },
@@ -126,8 +126,8 @@ const faqSections: {
 ];
 
 export default async function FaqPage() {
-  const session = await getSessionFromCookies();
-  if (!session) redirect("/login");
+  const session = await auth();
+  if (!session?.user) redirect("/login");
 
   return (
     <div className="space-y-10">
@@ -139,7 +139,7 @@ export default async function FaqPage() {
           Frequently asked questions
         </h1>
         <p className="mt-2 max-w-2xl text-muted">
-          Answers for investors using GoldenGate. For legal terms, rely on your
+          Answers for investors using Modular Equity. For legal terms, rely on your
           signed subscription documents and the PPM.
         </p>
       </div>

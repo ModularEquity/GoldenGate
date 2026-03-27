@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/auth-password";
-import { applySessionToResponse } from "@/lib/auth-session";
+import { roleFromEmail } from "@/lib/roles";
 import { hashToken } from "@/lib/tokens";
 
 export async function POST(request: Request) {
@@ -52,10 +52,12 @@ export async function POST(request: Request) {
 
     const passwordHash = await hashPassword(password);
 
+    const role = roleFromEmail(record.user.email);
+
     await prisma.$transaction([
       prisma.user.update({
         where: { id: record.userId },
-        data: { passwordHash },
+        data: { passwordHash, role },
       }),
       prisma.magicLinkToken.update({
         where: { id: record.id },
@@ -63,9 +65,7 @@ export async function POST(request: Request) {
       }),
     ]);
 
-    const res = NextResponse.json({ ok: true });
-    await applySessionToResponse(res, record.user.id, record.user.email);
-    return res;
+    return NextResponse.json({ ok: true, email: record.user.email });
   } catch (e) {
     console.error("[reset-password]", e);
     const detail =

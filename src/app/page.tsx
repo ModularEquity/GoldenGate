@@ -11,14 +11,14 @@ export default function HomePage() {
           Capital for renovations that create lasting value.
         </h1>
         <p className="max-w-2xl text-lg text-muted">
-          GoldenGate partners with investors to fund fix-and-flip and renovation
+          Modular Equity partners with investors to fund fix-and-flip and renovation
           projects—disciplined underwriting, transparent reporting, and a
           streamlined path from interest to subscription.
         </p>
         <div className="flex flex-wrap gap-4">
           <Link
             href="/register"
-            className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-background hover:opacity-90"
+            className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
           >
             Register your email
           </Link>

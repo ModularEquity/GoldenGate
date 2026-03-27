@@ -1,5 +1,5 @@
 /** Default sender — verified domain modularequity.com in Resend. Override via EMAIL_FROM only if needed. */
-const DEFAULT_EMAIL_FROM = "GoldenGate <noreply@modularequity.com>";
+const DEFAULT_EMAIL_FROM = "Modular Equity <noreply@modularequity.com>";
 
 type SendWelcomeResult =
   | { sent: true; resendId?: string }
@@ -72,9 +72,9 @@ export async function sendWelcomeMagicLink({
   to: string;
   magicLinkUrl: string;
 }): Promise<SendWelcomeResult> {
-  const subject = "Welcome to GoldenGate — set your password";
+  const subject = "Welcome to Modular Equity — set your password";
   const text = [
-    "Welcome to GoldenGate.",
+    "Welcome to Modular Equity.",
     "",
     "Click the link below to create your password and open your investor dashboard:",
     magicLinkUrl,
@@ -85,9 +85,9 @@ export async function sendWelcomeMagicLink({
   ].join("\n");
 
   const html = `
-    <p>Welcome to GoldenGate.</p>
+    <p>Welcome to Modular Equity.</p>
     <p>Click the button below to create your password and open your investor dashboard.</p>
-    <p><a href="${magicLinkUrl}" style="display:inline-block;padding:12px 20px;background:#c9a227;color:#0c0f14;text-decoration:none;border-radius:6px;font-weight:600;">Set your password</a></p>
+    <p><a href="${magicLinkUrl}" style="display:inline-block;padding:12px 20px;background:#0077b6;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">Set your password</a></p>
     <p style="color:#666;font-size:14px;">Or paste this link into your browser:<br/><a href="${magicLinkUrl}">${magicLinkUrl}</a></p>
     <p style="color:#666;font-size:14px;">This link expires in 24 hours.</p>
   `;
@@ -109,9 +109,9 @@ export async function sendPasswordResetEmail({
   to: string;
   resetUrl: string;
 }): Promise<SendWelcomeResult> {
-  const subject = "Reset your GoldenGate password";
+  const subject = "Reset your Modular Equity password";
   const text = [
-    "You asked to reset your GoldenGate password.",
+    "You asked to reset your Modular Equity password.",
     "",
     "Click the link below (valid 24 hours):",
     resetUrl,
@@ -120,8 +120,8 @@ export async function sendPasswordResetEmail({
   ].join("\n");
 
   const html = `
-    <p>You asked to reset your GoldenGate password.</p>
-    <p><a href="${resetUrl}" style="display:inline-block;padding:12px 20px;background:#c9a227;color:#0c0f14;text-decoration:none;border-radius:6px;font-weight:600;">Choose a new password</a></p>
+    <p>You asked to reset your Modular Equity password.</p>
+    <p><a href="${resetUrl}" style="display:inline-block;padding:12px 20px;background:#0077b6;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">Choose a new password</a></p>
     <p style="color:#666;font-size:14px;">Or paste this link:<br/><a href="${resetUrl}">${resetUrl}</a></p>
     <p style="color:#666;font-size:14px;">This link expires in 24 hours.</p>
   `;

@@ -1,7 +1,10 @@
+/**
+ * Deprecated: use `signIn("credentials", ...)` from the client (next-auth/react).
+ * Kept for backwards compatibility — validates only.
+ */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth-password";
-import { applySessionToResponse } from "@/lib/auth-session";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -43,9 +46,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const res = NextResponse.json({ ok: true });
-    await applySessionToResponse(res, user.id, user.email);
-    return res;
+    return NextResponse.json({ ok: true, email });
   } catch (e) {
     console.error("[login]", e);
     return NextResponse.json(

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { ResetPasswordForm } from "@/components/ResetPasswordForm";
 
 export const metadata = {
-  title: "New password — GoldenGate",
+  title: "New password — Modular Equity",
   description: "Set a new password from your reset link.",
 };
 

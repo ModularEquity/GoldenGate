@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
+/* Modular Equity — Robin Blue + Ceramic Gray */
 :root {
-  --background: #0c0f14;
-  --foreground: #e8eaef;
-  --accent: #c9a227;
-  --muted: #8b929e;
-  --card: #141a22;
-  --border: #2a3340;
+  --background: #eceef1;
+  --foreground: #1b1e24;
+  --accent: #0077b6;
+  --accent-hover: #005f92;
+  --muted: #5c6370;
+  --card: #ffffff;
+  --border: #d1d5dc;
 }
 
 @theme inline {

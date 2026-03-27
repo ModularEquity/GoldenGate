@@ -1,10 +1,10 @@
-# AGENTS.md — GoldenGate Private Equity Platform
+# AGENTS.md — Modular Equity Private Equity Platform
 
 Guidance for AI coding agents and contributors working on this repository.
 
 ## Product context
 
-**GoldenGate** is a **private equity** firm raising capital for **real estate projects**, with a primary focus on **renovations (fix-and-flip)**. The product is investor-facing: onboarding, compliance documents, deal review, subscription, and funding.
+**Modular Equity** is a **private equity** firm raising capital for **real estate projects**, with a primary focus on **renovations (fix-and-flip)**. The product is investor-facing: onboarding, compliance documents, deal review, subscription, and funding.
 
 ## Tech stack & integrations
 
@@ -78,7 +78,8 @@ Open `http://localhost:3000`. Build: `npm run build`.
 ## Auth & data (implemented)
 
 - **PostgreSQL + Prisma** — local Docker or cloud; Vercel uses Marketplace Postgres (e.g. Neon). See `docs/database-vercel-postgres.md`.
-- **Magic link** with purpose: `SET_PASSWORD` (welcome) vs `RESET_PASSWORD` (forgot flow); 24h TTL; **bcrypt** + **JWT** session (`gg_session`).
-- **Email**: `RESEND_API_KEY` only; default `From` is `noreply@modularequity.com`; magic links use Vercel `VERCEL_URL` unless `APP_URL` is set. See `docs/resend-and-production.md`.
+- **NextAuth (Auth.js)** — Google OAuth + credentials; JWT sessions; **`UserRole`**: `INVESTOR` vs `EMPLOYEE` (email `@modularequity.com` → Employee).
+- **Magic link** with purpose: `SET_PASSWORD` (welcome) vs `RESET_PASSWORD` (forgot flow); 24h TTL; **bcrypt** for passwords.
+- **Email**: `RESEND_API_KEY`; default `From` is `Modular Equity <noreply@modularequity.com>`. See `docs/resend-and-production.md`.
 
 Still incremental: Plaid/Mercury/DocSign, Postgres migration for production.

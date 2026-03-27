@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -16,25 +17,31 @@ export function LoginForm() {
     setMessage("");
     setStatus("loading");
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
 
-      if (!res.ok || !data.ok) {
+      if (res?.error) {
         setStatus("error");
-        setMessage(data.error ?? "Could not sign in.");
+        setMessage("Invalid email or password.");
         return;
       }
 
+      setStatus("idle");
       router.push("/dashboard");
       router.refresh();
     } catch {
       setStatus("error");
-      setMessage("Network error. Try again.");
+      setMessage("Could not sign in. Try again.");
     }
+  }
+
+  async function signInWithGoogle() {
+    setMessage("");
+    setStatus("loading");
+    await signIn("google", { callbackUrl: "/dashboard" });
   }
 
   return (
@@ -45,8 +52,26 @@ export function LoginForm() {
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
         <p className="text-sm text-muted">
-          Use the email and password for your investor account.
+          Use your email and password, or continue with Google.
         </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={signInWithGoogle}
+        disabled={status === "loading"}
+        className="w-full rounded-md border border-border bg-background py-2.5 text-sm font-medium text-foreground hover:border-accent hover:text-accent disabled:opacity-50"
+      >
+        Continue with Google
+      </button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-card px-2 text-muted">Or</span>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -92,7 +117,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full rounded-md bg-accent py-2.5 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+        className="w-full rounded-md bg-accent py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
       >
         {status === "loading" ? "Signing in…" : "Sign in"}
       </button>

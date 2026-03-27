@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { getSessionFromCookies } from "@/lib/auth-session";
 
 export async function GET() {
-  const session = await getSessionFromCookies();
-  if (!session) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const wallets = await prisma.wallet.findMany({
-    where: { userId: session.sub },
+    where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
   });
 
@@ -17,8 +17,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await getSessionFromCookies();
-  if (!session) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
   const wallet = await prisma.wallet.create({
     data: {
-      userId: session.sub,
+      userId: session.user.id,
       label,
       address,
       chain,

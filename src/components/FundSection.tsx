@@ -147,7 +147,7 @@ export function FundSection({
         <button
           type="submit"
           disabled={loading || amountCents < 100}
-          className="mt-4 rounded-md bg-accent px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+          className="mt-4 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
         >
           {loading ? "Submitting…" : "Submit funding request"}
         </button>

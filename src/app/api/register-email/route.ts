@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { getAppUrl } from "@/lib/app-url";
 import { sendWelcomeMagicLink } from "@/lib/email";
 import { createMagicLinkToken } from "@/lib/magic-link";
+import { roleFromEmail } from "@/lib/roles";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,10 +20,11 @@ export async function POST(request: Request) {
       );
     }
 
+    const role = roleFromEmail(email);
     const user = await prisma.user.upsert({
       where: { email },
-      create: { email },
-      update: {},
+      create: { email, role },
+      update: { role },
     });
 
     const { rawToken } = await createMagicLinkToken(user.id, "SET_PASSWORD");

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSessionFromCookies } from "@/lib/auth-session";
+import { auth } from "@/auth";
 
 export const metadata = {
-  title: "Dashboard — GoldenGate",
+  title: "Dashboard — Modular Equity",
   description: "Your investor dashboard.",
 };
 
@@ -43,17 +43,32 @@ const sections = [
 ];
 
 export default async function DashboardPage() {
-  const session = await getSessionFromCookies();
-  if (!session) {
+  const session = await auth();
+  if (!session?.user) {
     redirect("/login");
   }
+
+  const role = session.user.role;
+  const isEmployee = role === "EMPLOYEE";
 
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Investor hub</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          {isEmployee ? "Employee hub" : "Investor hub"}
+        </h1>
         <p className="mt-2 text-muted">
-          Signed in as <span className="text-foreground">{session.email}</span>
+          Signed in as{" "}
+          <span className="text-foreground">{session.user.email}</span>
+          {isEmployee ? (
+            <span className="ml-2 rounded-md bg-accent/20 px-2 py-0.5 text-xs font-medium text-accent">
+              Employee
+            </span>
+          ) : (
+            <span className="ml-2 rounded-md border border-border px-2 py-0.5 text-xs text-muted">
+              Investor
+            </span>
+          )}
         </p>
         <p className="mt-3 max-w-2xl text-sm text-muted">
           Follow the steps below to complete onboarding, review documents and
@@ -86,14 +101,25 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <section className="rounded-xl border border-dashed border-border bg-background/50 p-6">
+      {isEmployee ? (
+        <section className="rounded-xl border border-accent/40 bg-card p-6">
+          <h2 className="font-medium text-foreground">Employee</h2>
+          <p className="mt-2 text-sm text-muted">
+            <Link href="/dashboard/team" className="text-accent hover:underline">
+              Open team & operations →
+            </Link>
+          </p>
+        </section>
+      ) : null}
+
+      <section className="rounded-xl border border-dashed border-border bg-card/80 p-6">
         <h2 className="font-medium text-foreground">Quick reference</h2>
         <p className="mt-2 text-sm text-muted">
           <Link href="/dashboard/faq" className="text-accent hover:underline">
             Investor FAQ
           </Link>
           {" · "}
-          See <code className="rounded bg-card px-1 py-0.5 text-xs">AGENTS.md</code>{" "}
+          See <code className="rounded bg-background px-1 py-0.5 text-xs">AGENTS.md</code>{" "}
           in the repo for the full journey. Need help? Contact your sponsor at
           Modular Equity.
         </p>

@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSessionFromCookies } from "@/lib/auth-session";
+import { auth } from "@/auth";
 import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
 
 export const metadata = {
-  title: "Documents — GoldenGate",
+  title: "Documents — Modular Equity",
 };
 
 export default async function DocumentsPage() {
-  const session = await getSessionFromCookies();
-  if (!session) redirect("/login");
+  const session = await auth();
+  if (!session?.user) redirect("/login");
 
   return (
     <div className="space-y-8">

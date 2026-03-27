@@ -1,22 +1,22 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { getSessionFromCookies } from "@/lib/auth-session";
 
 export async function GET() {
-  const session = await getSessionFromCookies();
-  if (!session) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const [intents, plaidAccounts] = await Promise.all([
     prisma.fundingIntent.findMany({
-      where: { userId: session.sub },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       take: 50,
       include: { plaidAccount: true },
     }),
     prisma.plaidAccount.findMany({
-      where: { userId: session.sub },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -33,8 +33,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await getSessionFromCookies();
-  if (!session) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   let plaidAccountId: string | null = null;
   if (typeof body.plaidAccountId === "string" && body.plaidAccountId) {
     const acc = await prisma.plaidAccount.findFirst({
-      where: { id: body.plaidAccountId, userId: session.sub },
+      where: { id: body.plaidAccountId, userId: session.user.id },
     });
     if (!acc) {
       return NextResponse.json(
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
   const intent = await prisma.fundingIntent.create({
     data: {
-      userId: session.sub,
+      userId: session.user.id,
       amountCents,
       plaidAccountId,
       note,

@@ -1,26 +1,11 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { verifySessionToken } from "@/lib/session-jwt";
+import { auth } from "@/auth";
 
-export async function middleware(request: NextRequest) {
-  if (!request.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.next();
+export default auth((req) => {
+  if (!req.auth && req.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
   }
-
-  const token = request.cookies.get("gg_session")?.value;
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  const session = await verifySessionToken(token);
-  if (!session) {
-    const res = NextResponse.redirect(new URL("/login", request.url));
-    res.cookies.delete("gg_session");
-    return res;
-  }
-
-  return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/dashboard/:path*"],
