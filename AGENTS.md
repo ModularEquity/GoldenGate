@@ -73,6 +73,6 @@ Open `http://localhost:3000`. Build: `npm run build`.
 
 - **SQLite + Prisma** locally; use `DATABASE_URL` Postgres on Vercel.
 - **Magic link** (hashed token, 24h TTL) + **bcrypt** password + **JWT** session cookie (`gg_session`).
-- **Email**: `RESEND_API_KEY` + `EMAIL_FROM` + `APP_URL`; verify sender domain in Resend for non-test recipients. See `docs/resend-and-production.md`.
+- **Email**: `RESEND_API_KEY` only; default `From` is `noreply@modularequity.com`; magic links use Vercel `VERCEL_URL` unless `APP_URL` is set. See `docs/resend-and-production.md`.
 
 Still incremental: Plaid/Mercury/DocSign, Postgres migration for production.

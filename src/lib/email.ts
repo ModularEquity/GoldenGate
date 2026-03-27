@@ -1,3 +1,6 @@
+/** Default sender — verified domain modularequity.com in Resend. Override via EMAIL_FROM only if needed. */
+const DEFAULT_EMAIL_FROM = "GoldenGate <noreply@modularequity.com>";
+
 type SendMagicLinkParams = {
   to: string;
   magicLinkUrl: string;
@@ -12,8 +15,7 @@ export async function sendWelcomeMagicLink({
   magicLinkUrl,
 }: SendMagicLinkParams): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from =
-    process.env.EMAIL_FROM ?? "GoldenGate <onboarding@resend.dev>";
+  const from = process.env.EMAIL_FROM ?? DEFAULT_EMAIL_FROM;
 
   const subject = "Welcome to GoldenGate — set your password";
   const text = [
