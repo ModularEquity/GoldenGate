@@ -18,7 +18,12 @@ export function RegisterEmailForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        emailSent?: boolean;
+        emailIssue?: "missing_resend_key";
+      };
 
       if (!res.ok || !data.ok) {
         setStatus("error");
@@ -27,8 +32,17 @@ export function RegisterEmailForm() {
       }
 
       setStatus("success");
+
+      if (data.emailIssue === "missing_resend_key") {
+        setMessage(
+          "Your email is saved, but outbound mail isn’t configured yet. Add RESEND_API_KEY in Vercel → Environment Variables (Production), then Redeploy. Ask an admin for your magic link if you need access sooner.",
+        );
+        setEmail("");
+        return;
+      }
+
       setMessage(
-        "Check your inbox for a welcome email with a link to set your password. If you don’t see it, check spam—or look at the server console in local development.",
+        "Check your inbox for a welcome email with a link to set your password. If you don’t see it within a few minutes, check spam.",
       );
       setEmail("");
     } catch {

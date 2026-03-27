@@ -6,15 +6,20 @@ type SendMagicLinkParams = {
   magicLinkUrl: string;
 };
 
+export type SendWelcomeResult =
+  | { sent: true; resendId?: string }
+  | { sent: false; reason: "missing_api_key" }
+  | { sent: false; reason: "resend_error"; status: number; body: string };
+
 /**
  * Sends welcome + magic link. Uses Resend when RESEND_API_KEY is set;
- * otherwise logs the link (local dev).
+ * otherwise skips (logs in dev only).
  */
 export async function sendWelcomeMagicLink({
   to,
   magicLinkUrl,
-}: SendMagicLinkParams): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
+}: SendMagicLinkParams): Promise<SendWelcomeResult> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM ?? DEFAULT_EMAIL_FROM;
 
   const subject = "Welcome to GoldenGate — set your password";
@@ -38,11 +43,17 @@ export async function sendWelcomeMagicLink({
   `;
 
   if (!apiKey) {
-    console.info(
-      "[email] RESEND_API_KEY not set — magic link (dev only):\n",
-      magicLinkUrl,
-    );
-    return;
+    if (process.env.NODE_ENV === "development") {
+      console.info(
+        "[email] RESEND_API_KEY not set — magic link (dev only):\n",
+        magicLinkUrl,
+      );
+    } else {
+      console.warn(
+        "[email] RESEND_API_KEY is not set — no email sent. Add RESEND_API_KEY in Vercel → Environment Variables (Production) and redeploy.",
+      );
+    }
+    return { sent: false, reason: "missing_api_key" };
   }
 
   const res = await fetch("https://api.resend.com/emails", {
@@ -62,6 +73,22 @@ export async function sendWelcomeMagicLink({
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`Resend error: ${res.status} ${err}`);
+    console.error("[email] Resend API error:", res.status, err);
+    return {
+      sent: false,
+      reason: "resend_error",
+      status: res.status,
+      body: err,
+    };
   }
+
+  let resendId: string | undefined;
+  try {
+    const json = (await res.json()) as { id?: string };
+    resendId = json.id;
+  } catch {
+    /* ignore */
+  }
+  console.info("[email] Resend OK", resendId ? `id=${resendId}` : "");
+  return { sent: true, resendId };
 }

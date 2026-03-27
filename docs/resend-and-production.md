@@ -7,7 +7,11 @@ The app sends the **welcome / magic-link** email via Resend’s API. Here’s wh
 - In Resend: **API Keys** → create a key.
 - Set **`RESEND_API_KEY`** in:
   - **Local:** `.env` (never commit)
-  - **Vercel:** Project → Settings → Environment Variables (Production + Preview as needed)
+  - **Vercel:** Project → Settings → Environment Variables
+
+**Critical on Vercel:** add **`RESEND_API_KEY`** for **Production** (not only Preview). **Redeploy** after adding or changing it — env vars are baked in at build/runtime; a missing key means **Resend never runs** (the register form will say mail isn’t configured yet).
+
+If Resend returns an error (wrong domain, invalid key), check **Vercel → Deployment → Logs** for `[email] Resend API error:`.
 
 ## 2. Sender address — **no env var required**
 

@@ -44,9 +44,28 @@ export async function POST(request: Request) {
     const base = getAppUrl();
     const magicLinkUrl = `${base}/set-password?token=${encodeURIComponent(rawToken)}`;
 
-    await sendWelcomeMagicLink({ to: email, magicLinkUrl });
+    const emailResult = await sendWelcomeMagicLink({ to: email, magicLinkUrl });
 
-    return NextResponse.json({ ok: true });
+    if (emailResult.sent) {
+      return NextResponse.json({ ok: true, emailSent: true });
+    }
+
+    if (emailResult.reason === "missing_api_key") {
+      return NextResponse.json({
+        ok: true,
+        emailSent: false,
+        emailIssue: "missing_resend_key" as const,
+      });
+    }
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "We saved your email but could not send the message. Check Resend (domain + API key) in Vercel.",
+      },
+      { status: 503 },
+    );
   } catch (e) {
     console.error("[register-email]", e);
     return NextResponse.json(
