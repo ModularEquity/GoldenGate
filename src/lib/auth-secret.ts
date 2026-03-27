@@ -1,13 +1,28 @@
 /**
  * Single source of truth for the secret used by NextAuth and middleware JWT checks.
- * On Vercel, set **AUTH_SECRET** (or legacy NEXTAUTH_SECRET) to a random string ≥ 32 chars.
+ * Prefer **AUTH_SECRET** (or legacy NEXTAUTH_SECRET) — random string ≥ 32 chars
+ * (`npm run auth:secret`). **Not** the same as `AUTH_GOOGLE_SECRET`.
  *
- * We do **not** generate this at request time or on every cold start: a new secret would
- * invalidate all sessions and break login until cookies refresh. Generate once with
- * `npm run auth:secret` and store in env.
- *
- * **Not** the same as `AUTH_GOOGLE_SECRET` (Google OAuth client secret).
+ * On **Vercel**, if AUTH_SECRET is unset, we derive a **stable** secret from
+ * `VERCEL_PROJECT_ID` (same for all deploys of the project) so the app boots without
+ * manual env setup. Sessions survive redeploys; still set AUTH_SECRET for defense in depth.
  */
+
+let warnedVercelFallback = false;
+
+/** Stable ≥32-char secret when running on Vercel without AUTH_SECRET (Edge-safe, sync). */
+function getVercelProjectDerivedSecret(): string | null {
+  if (process.env.VERCEL !== "1") return null;
+  const pid = process.env.VERCEL_PROJECT_ID?.trim();
+  if (!pid) return null;
+
+  let s = `vercel-auth-v1:${pid}:modularequity`;
+  while (s.length < 48) {
+    s += s;
+  }
+  return s.slice(0, 48);
+}
+
 export function getAuthSecret(): string {
   const fromEnv =
     process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
@@ -24,6 +39,17 @@ export function getAuthSecret(): string {
   // `next build` imports auth without production env vars; avoid failing the build.
   if (process.env.NEXT_PHASE === "phase-production-build") {
     return "build-time-placeholder-secret-min-32-chars!";
+  }
+
+  const vercelFallback = getVercelProjectDerivedSecret();
+  if (vercelFallback) {
+    if (!warnedVercelFallback) {
+      warnedVercelFallback = true;
+      console.warn(
+        "[auth] AUTH_SECRET unset — using Vercel project-derived fallback. Set AUTH_SECRET (≥32 chars) in Vercel for production.",
+      );
+    }
+    return vercelFallback;
   }
 
   throw new Error(

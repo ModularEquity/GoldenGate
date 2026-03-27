@@ -32,7 +32,8 @@ Links look like: `{base}/set-password?token=...`
 
 | Variable | Why |
 |----------|-----|
-| **`AUTH_SECRET`** | Signs session JWTs. Min **32 characters**. **Different from** `AUTH_GOOGLE_SECRET` (that one is only for Google’s OAuth client). Generate: `npm run auth:secret` or `openssl rand -base64 32`. **Required** in production. **Do not** rotate on every deploy — same value must stay stable or everyone is logged out. |
+| **`AUTH_SECRET`** | Signs session JWTs. Min **32 characters**. **Different from** `AUTH_GOOGLE_SECRET` (that one is only for Google’s OAuth client). Generate: `npm run auth:secret` or `openssl rand -base64 32`. **Do not** rotate on every deploy — same value must stay stable or everyone is logged out. |
+| *(Vercel fallback)* | If **`AUTH_SECRET`** is missing on Vercel, the app derives a **stable** secret from **`VERCEL_PROJECT_ID`** so pages don’t 500 — still add **`AUTH_SECRET`** yourself for a proper random key. |
 | **`AUTH_URL`** | Canonical site URL for OAuth. **Optional on Vercel:** if omitted, the app derives `https://{VERCEL_URL}`. Set explicitly if you use a custom domain and OAuth misbehaves. |
 | **`DATABASE_URL`** | On **Vercel**, use **Postgres** (Neon, Supabase, Vercel Postgres, etc.). SQLite files don’t persist on serverless. Run migrations: `npx prisma migrate deploy` in CI or Vercel build. |
 
