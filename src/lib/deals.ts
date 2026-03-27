@@ -12,6 +12,8 @@ export type DealListItem = {
   thumbnailUrl: string | null;
   purchaseUsd: number;
   saleUsd: number;
+  totalCostUsd: number;
+  maxSubscriptionPctOfTotalCost: number;
 };
 
 export type DealDetail = DealListItem & {
@@ -20,7 +22,6 @@ export type DealDetail = DealListItem & {
   debtRatePct: number;
   renoBudgetUsd: number;
   transactionFeesUsd: number;
-  totalCostUsd: number;
   profitUsd: number;
   moneyToCloseUsd: number;
   closeDate: Date | null;
@@ -55,6 +56,7 @@ export function toDealDetail(d: PrismaDeal): DealDetail {
     moneyToCloseUsd: d.moneyToCloseUsd,
     closeDate: d.closeDate,
     moneyToRenoUsd: d.moneyToRenoUsd,
+    maxSubscriptionPctOfTotalCost: d.maxSubscriptionPctOfTotalCost,
   };
 }
 
@@ -71,6 +73,8 @@ export function toDealListItem(d: PrismaDeal): DealListItem {
     thumbnailUrl: d.thumbnailUrl,
     purchaseUsd: d.purchaseUsd,
     saleUsd: d.saleUsd,
+    totalCostUsd: d.totalCostUsd,
+    maxSubscriptionPctOfTotalCost: d.maxSubscriptionPctOfTotalCost,
   };
 }
 

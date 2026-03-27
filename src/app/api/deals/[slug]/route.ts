@@ -98,6 +98,14 @@ export async function PATCH(request: Request, ctx: Ctx) {
       ? body.status
       : deal.status;
 
+  let maxPct = deal.maxSubscriptionPctOfTotalCost;
+  if (body.maxSubscriptionPctOfTotalCost !== undefined) {
+    const p = Number(body.maxSubscriptionPctOfTotalCost);
+    if (Number.isFinite(p) && p >= 1 && p <= 100) {
+      maxPct = Math.floor(p);
+    }
+  }
+
   const updated = await prisma.deal.update({
     where: { id: deal.id },
     data: {
@@ -134,6 +142,7 @@ export async function PATCH(request: Request, ctx: Ctx) {
       moneyToCloseUsd: numOpt("moneyToCloseUsd") ?? deal.moneyToCloseUsd,
       closeDate,
       moneyToRenoUsd: numOpt("moneyToRenoUsd") ?? deal.moneyToRenoUsd,
+      maxSubscriptionPctOfTotalCost: maxPct,
     },
   });
 

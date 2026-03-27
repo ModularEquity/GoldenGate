@@ -44,7 +44,7 @@ const sections = [
     title: "4 · Subscribe & fund",
     description: "Execute subscription documents and fund via ACH.",
     links: [
-      { href: "/dashboard/subscribe", label: "Subscribe to a deal (DocSign)" },
+      { href: "/dashboard/subscribe", label: "Subscribe to a deal" },
       { href: "/dashboard/fund", label: "Bank accounts & funding" },
     ],
   },

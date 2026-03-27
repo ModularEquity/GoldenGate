@@ -74,7 +74,7 @@ export default async function DealDetailPage({ params }: Props) {
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
         <a
           href={deal.propertyUrl}
           target="_blank"
@@ -83,6 +83,14 @@ export default async function DealDetailPage({ params }: Props) {
         >
           View on Redfin ↗
         </a>
+        {row.status === "OPEN" && session.user.role !== "EMPLOYEE" ? (
+          <Link
+            href={`/dashboard/subscribe/${deal.slug}`}
+            className="inline-flex w-fit items-center rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
+          >
+            Subscribe to this deal →
+          </Link>
+        ) : null}
         {session.user.role === "EMPLOYEE" ? (
           <RefreshDealThumbnail slug={deal.slug} />
         ) : null}

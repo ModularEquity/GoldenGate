@@ -130,6 +130,14 @@ export async function POST(request: Request) {
 
   const thumbnailUrl = await fetchOgImageUrl(propertyUrl);
 
+  let maxSubscriptionPctOfTotalCost = 20;
+  if (body.maxSubscriptionPctOfTotalCost !== undefined) {
+    const p = Number(body.maxSubscriptionPctOfTotalCost);
+    if (Number.isFinite(p) && p >= 1 && p <= 100) {
+      maxSubscriptionPctOfTotalCost = Math.floor(p);
+    }
+  }
+
   const deal = await prisma.deal.create({
     data: {
       slug,
@@ -152,6 +160,7 @@ export async function POST(request: Request) {
       moneyToCloseUsd,
       closeDate,
       moneyToRenoUsd,
+      maxSubscriptionPctOfTotalCost,
     },
   });
 

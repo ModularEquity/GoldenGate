@@ -23,6 +23,7 @@ const empty = {
   moneyToCloseUsd: "",
   closeDate: "",
   moneyToRenoUsd: "",
+  maxSubscriptionPctOfTotalCost: "20",
 };
 
 export function DealForm() {
@@ -63,6 +64,9 @@ export function DealForm() {
           moneyToCloseUsd: f.moneyToCloseUsd,
           closeDate: f.closeDate || undefined,
           moneyToRenoUsd: f.moneyToRenoUsd,
+          maxSubscriptionPctOfTotalCost: f.maxSubscriptionPctOfTotalCost
+            ? Number(f.maxSubscriptionPctOfTotalCost)
+            : undefined,
         }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string; deal?: { slug: string } };
@@ -188,6 +192,23 @@ export function DealForm() {
             onChange={(e) => set("closeDate", e.target.value)}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            Max subscription (% of total cost)
+          </label>
+          <input
+            value={f.maxSubscriptionPctOfTotalCost}
+            onChange={(e) =>
+              set("maxSubscriptionPctOfTotalCost", e.target.value)
+            }
+            inputMode="numeric"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            placeholder="20"
+          />
+          <p className="text-xs text-muted">
+            Investor cap per deal = this % × total cost (min $5,000).
+          </p>
         </div>
       </div>
 
