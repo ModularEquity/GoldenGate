@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
 import { toDealListItem } from "@/lib/deals";
 import { DealCard } from "@/components/DealCard";
+import { fetchOgImageUrl } from "@/lib/og-image";
 
 export const metadata = {
   title: "Deals — Modular Equity",
@@ -17,6 +18,21 @@ export default async function DealsPage() {
   const rows = await prisma.deal.findMany({
     orderBy: { createdAt: "desc" },
   });
+
+  await Promise.all(
+    rows.map(async (row) => {
+      if (row.thumbnailUrl || !row.propertyUrl) return;
+      const url = await fetchOgImageUrl(row.propertyUrl);
+      if (url) {
+        await prisma.deal.update({
+          where: { id: row.id },
+          data: { thumbnailUrl: url },
+        });
+        row.thumbnailUrl = url;
+      }
+    }),
+  );
+
   const deals = rows.map(toDealListItem);
 
   return (

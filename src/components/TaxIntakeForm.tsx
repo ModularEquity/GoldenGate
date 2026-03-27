@@ -17,7 +17,7 @@ export function TaxIntakeForm({
   const [businessName, setBusinessName] = useState(
     initialProfile?.businessName ?? "",
   );
-  const [tinLast4, setTinLast4] = useState(initialProfile?.tinLast4 ?? "");
+  const [tin, setTin] = useState(initialProfile?.tin ?? "");
   const [federalClassification, setFederalClassification] = useState(
     initialProfile?.federalClassification ?? "",
   );
@@ -62,7 +62,7 @@ export function TaxIntakeForm({
           formType,
           legalName,
           businessName: businessName || undefined,
-          tinLast4,
+          tin,
           federalClassification: federalClassification || undefined,
           addressLine1,
           addressLine2: addressLine2 || undefined,
@@ -144,22 +144,31 @@ export function TaxIntakeForm({
               />
             </div>
           ) : null}
-          <div className="space-y-2">
-            <label htmlFor="tin4" className="text-sm font-medium">
-              TIN — last 4 digits only
+          <div className="space-y-2 sm:col-span-2">
+            <label htmlFor="tin-full" className="text-sm font-medium">
+              {formType === "W9"
+                ? "Taxpayer identification number (TIN) — SSN or EIN, 9 digits"
+                : "Foreign TIN (as applicable)"}
             </label>
             <input
-              id="tin4"
+              id="tin-full"
               required
               inputMode="numeric"
-              maxLength={4}
-              value={tinLast4}
+              autoComplete="off"
+              value={tin}
               onChange={(e) =>
-                setTinLast4(e.target.value.replace(/\D/g, "").slice(0, 4))
+                setTin(
+                  formType === "W9"
+                    ? e.target.value.replace(/\D/g, "").slice(0, 9)
+                    : e.target.value.replace(/\D/g, "").slice(0, 20),
+                )
               }
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-              placeholder="1234"
+              className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm"
+              placeholder={formType === "W9" ? "9-digit SSN or EIN" : "TIN"}
             />
+            <p className="text-xs text-muted">
+              Stored securely for tax reporting. PDF download masks TIN.
+            </p>
           </div>
           {(formType === "W8BEN" || formType === "W8BENE") && (
             <div className="space-y-2">

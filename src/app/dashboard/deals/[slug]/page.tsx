@@ -1,9 +1,13 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { toDealDetail } from "@/lib/deals";
 import { RefreshDealThumbnail } from "@/components/RefreshDealThumbnail";
+import { fetchOgImageUrl } from "@/lib/og-image";
+import { computeDealReturnMetrics, formatPct } from "@/lib/deal-metrics";
+import { DealInvestmentCalculator } from "@/components/DealInvestmentCalculator";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -31,7 +35,24 @@ export default async function DealDetailPage({ params }: Props) {
   const row = await prisma.deal.findUnique({ where: { slug } });
   if (!row) notFound();
 
-  const deal = toDealDetail(row);
+  let thumbnailUrl = row.thumbnailUrl;
+  if (!thumbnailUrl && row.propertyUrl) {
+    const fetched = await fetchOgImageUrl(row.propertyUrl);
+    if (fetched) {
+      await prisma.deal.update({
+        where: { id: row.id },
+        data: { thumbnailUrl: fetched },
+      });
+      thumbnailUrl = fetched;
+    }
+  }
+
+  const deal = toDealDetail({ ...row, thumbnailUrl });
+  const returns = computeDealReturnMetrics(
+    deal.profitUsd,
+    deal.totalCostUsd,
+    deal.holdPeriodMonths,
+  );
   const statusLabel =
     deal.status === "OPEN"
       ? "Open"
@@ -126,6 +147,16 @@ export default async function DealDetailPage({ params }: Props) {
           <Fin label="Transaction fees" value={fmtUsd(deal.transactionFeesUsd)} />
           <Fin label="Total cost" value={fmtUsd(deal.totalCostUsd)} />
           <Fin label="Profit" value={fmtUsd(deal.profitUsd)} />
+          <Fin
+            label="% Return (profit / total cost)"
+            value={formatPct(returns.totalReturnPct, 2)}
+          />
+          <Fin
+            label="Annualized IRR"
+            value={
+              <span className="italic">{formatPct(returns.annualizedIrrPct, 2)}</span>
+            }
+          />
           <Fin label="Money to close" value={fmtUsd(deal.moneyToCloseUsd)} />
           <Fin label="Money to reno" value={fmtUsd(deal.moneyToRenoUsd)} />
           <Fin
@@ -142,6 +173,11 @@ export default async function DealDetailPage({ params }: Props) {
           />
         </dl>
       </section>
+
+      <DealInvestmentCalculator
+        totalCostUsd={deal.totalCostUsd}
+        profitUsd={deal.profitUsd}
+      />
 
       <section className="rounded-xl border border-dashed border-border bg-card/80 p-6">
         <h2 className="font-medium text-foreground">Next steps</h2>
@@ -165,7 +201,13 @@ export default async function DealDetailPage({ params }: Props) {
   );
 }
 
-function Fin({ label, value }: { label: string; value: string }) {
+function Fin({
+  label,
+  value,
+}: {
+  label: string;
+  value: ReactNode;
+}) {
   return (
     <div className="rounded-lg border border-border/80 bg-background/50 p-4">
       <dt className="text-xs font-medium uppercase tracking-wide text-muted">

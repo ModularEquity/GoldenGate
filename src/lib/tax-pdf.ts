@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { TaxProfile } from "@/lib/tax-profile";
+import { maskTinForPdf } from "@/lib/tax-profile";
 
 function labelForForm(t: TaxProfile["formType"]): string {
   switch (t) {
@@ -51,11 +52,18 @@ export async function buildTaxProfilePdf(
   draw(`Generated: ${new Date().toISOString().slice(0, 10)}`, 10);
   y -= 12;
 
+  const tinDisplay =
+    profile.formType === "W9"
+      ? maskTinForPdf(profile.tin)
+      : profile.tin
+        ? `${profile.tin.length} digits on file`
+        : "—";
+
   const lines: [string, string][] = [
     ["Form type", profile.formType],
     ["Legal name", profile.legalName],
     ["Business name", profile.businessName ?? "—"],
-    ["TIN (last 4 only)", profile.tinLast4 ? `***-**-${profile.tinLast4.slice(-4)}` : "—"],
+    ["TIN (masked)", tinDisplay],
     ["Federal classification (W-9)", profile.federalClassification ?? "—"],
     ["Address", profile.addressLine1],
     ["Address line 2", profile.addressLine2 ?? "—"],

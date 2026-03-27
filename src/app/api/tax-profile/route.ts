@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { TaxProfile } from "@/lib/tax-profile";
-import { parseTaxProfile } from "@/lib/tax-profile";
+import {
+  isValidUsTin,
+  normalizeTinDigits,
+  parseTaxProfile,
+} from "@/lib/tax-profile";
 
 function validateBody(body: unknown): TaxProfile | null {
   if (!body || typeof body !== "object") return null;
@@ -13,10 +17,15 @@ function validateBody(body: unknown): TaxProfile | null {
   }
   const legalName = typeof o.legalName === "string" ? o.legalName.trim() : "";
   if (legalName.length < 2) return null;
-  const tinLast4 = String(o.tinLast4 ?? "")
-    .replace(/\D/g, "")
-    .slice(0, 4);
-  if (tinLast4.length !== 4) return null;
+
+  const tin = normalizeTinDigits(String(o.tin ?? ""));
+  if (formType === "W9" && !isValidUsTin(tin)) {
+    return null;
+  }
+  if ((formType === "W8BEN" || formType === "W8BENE") && tin.length < 4) {
+    return null;
+  }
+
   const addressLine1 =
     typeof o.addressLine1 === "string" ? o.addressLine1.trim() : "";
   if (addressLine1.length < 3) return null;
@@ -36,7 +45,7 @@ function validateBody(body: unknown): TaxProfile | null {
     legalName,
     businessName:
       typeof o.businessName === "string" ? o.businessName.trim() || undefined : undefined,
-    tinLast4,
+    tin,
     federalClassification:
       typeof o.federalClassification === "string"
         ? o.federalClassification.trim() || undefined
@@ -92,7 +101,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Invalid or incomplete data. Required: form type, legal name, last 4 of TIN, full address.",
+          "Invalid or incomplete data. W-9 requires a 9-digit TIN (SSN or EIN). Include full address.",
       },
       { status: 400 },
     );

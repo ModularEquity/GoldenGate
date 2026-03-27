@@ -8,8 +8,8 @@ export type TaxProfile = {
   legalName: string;
   /** Business / disregarded entity name if applicable */
   businessName?: string;
-  /** US: SSN or EIN formatted as user typed (masked in PDF except last 4) */
-  tinLast4: string;
+  /** Full TIN (SSN or EIN) — digits only, stored encrypted-at-rest in DB via app security practices */
+  tin: string;
   /** US entity type for W-9 Line 3 */
   federalClassification?: string;
   /** Address line 1 */
@@ -28,7 +28,7 @@ export type TaxProfile = {
 export const emptyTaxProfile = (): TaxProfile => ({
   formType: "W9",
   legalName: "",
-  tinLast4: "",
+  tin: "",
   addressLine1: "",
   city: "",
   stateOrProvince: "",
@@ -36,12 +36,34 @@ export const emptyTaxProfile = (): TaxProfile => ({
   country: "United States",
 });
 
+/** US: SSN 9 digits or EIN 9 digits */
+export function normalizeTinDigits(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
+export function isValidUsTin(digits: string): boolean {
+  return digits.length === 9 && /^\d{9}$/.test(digits);
+}
+
+export function maskTinForPdf(digits: string): string {
+  if (digits.length < 4) return "—";
+  return `***-**-${digits.slice(-4)}`;
+}
+
 export function parseTaxProfile(
   json: Prisma.JsonValue | null | undefined,
 ): TaxProfile | null {
   if (!json || typeof json !== "object" || Array.isArray(json)) return null;
   const o = json as Record<string, unknown>;
   if (typeof o.legalName !== "string") return null;
+
+  let tin = "";
+  if (typeof o.tin === "string" && o.tin) {
+    tin = normalizeTinDigits(o.tin);
+  } else if (typeof o.tinLast4 === "string" && o.tinLast4) {
+    tin = normalizeTinDigits(o.tinLast4);
+  }
+
   return {
     formType:
       o.formType === "W8BEN" || o.formType === "W8BENE"
@@ -50,7 +72,7 @@ export function parseTaxProfile(
     legalName: o.legalName,
     businessName:
       typeof o.businessName === "string" ? o.businessName : undefined,
-    tinLast4: typeof o.tinLast4 === "string" ? o.tinLast4 : "",
+    tin,
     federalClassification:
       typeof o.federalClassification === "string"
         ? o.federalClassification
