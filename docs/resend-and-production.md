@@ -22,10 +22,21 @@ Set **`EMAIL_FROM`** exactly to that address (name + angle brackets optional).
 
 Links look like: `{APP_URL}/set-password?token=...`
 
-- **Production:** `APP_URL=https://your-domain.com` or your Vercel URL (no trailing slash).
+- **Production:** `APP_URL=https://your-domain.com` or your **stable** Vercel domain (no trailing slash).
+- **Do not** use the per-deployment URL (e.g. `something-abc123-team.vercel.app`) — it changes every deploy and will break old emails. Use the **production domain** from Vercel → *Domains* (e.g. `golden-gate-seven.vercel.app`) or your custom domain.
 - **Preview deploys:** Either set `APP_URL` per preview in Vercel or accept that previews need the correct env; wrong `APP_URL` → broken links in emails.
 
 `VERCEL_URL` is a fallback in code, but **`APP_URL` is explicit and recommended** for production.
+
+### GoldenGate (reference)
+
+| Item | Value |
+|------|--------|
+| Verified sender domain (Resend) | `modularequity.com` — use e.g. `GoldenGate <noreply@modularequity.com>` (or `hello@`, etc.) |
+| Stable Vercel URL | `https://golden-gate-seven.vercel.app` — set **`APP_URL`** to this unless you add a custom domain |
+| Per-deployment URL | e.g. `golden-gate-2zv1nvn7u-makaminski1337.vercel.app` — **do not** use for `APP_URL` |
+
+If you later add **`modularequity.com`** (or a subdomain) in Vercel, set **`APP_URL`** to that HTTPS URL so magic links match the site users open.
 
 ## 4. Production secrets (non-Resend)
 
@@ -50,7 +61,9 @@ Links look like: `{APP_URL}/set-password?token=...`
 ```env
 DATABASE_URL="postgresql://..."
 AUTH_SECRET="<32+ random chars>"
-APP_URL="https://your-app.vercel.app"
+APP_URL="https://golden-gate-seven.vercel.app"
 RESEND_API_KEY="re_..."
-EMAIL_FROM="GoldenGate <noreply@yourdomain.com>"
+EMAIL_FROM="GoldenGate <noreply@modularequity.com>"
 ```
+
+(Adjust `APP_URL` if you use a custom domain on Vercel; keep `EMAIL_FROM` aligned with an address on your verified Resend domain.)

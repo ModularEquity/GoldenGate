@@ -42,8 +42,8 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 |----------|---------|
 | `DATABASE_URL` | SQLite file locally (`file:./dev.db`); **use Postgres** on Vercel (serverless can’t persist SQLite) |
 | `AUTH_SECRET` | JWT signing (min 32 chars); required in production |
-| `APP_URL` | Base URL for magic links (e.g. `https://your-app.vercel.app`) |
+| `APP_URL` | Magic links; production: **`https://golden-gate-seven.vercel.app`** (stable Vercel domain), not the per-deployment URL |
 | `RESEND_API_KEY` | Send welcome / magic-link email |
-| `EMAIL_FROM` | Verified sender domain in production |
+| `EMAIL_FROM` | e.g. **`GoldenGate <noreply@modularequity.com>`** (verified domain in Resend) |
 
 Later: `PLAID_*`, payment provider keys.
