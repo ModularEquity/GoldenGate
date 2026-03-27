@@ -33,6 +33,14 @@ export default async function TeamPage() {
           You are signed in as <strong>{session.user.email}</strong> with{" "}
           <strong>Employee</strong> permissions.
         </p>
+        <div className="mt-4">
+          <Link
+            href="/dashboard/team/deals/new"
+            className="font-medium text-accent hover:underline"
+          >
+            Add a new deal →
+          </Link>
+        </div>
       </div>
     </div>
   );

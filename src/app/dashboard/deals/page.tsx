@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
 import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
-import { DEALS } from "@/lib/deals";
+import { toDealListItem } from "@/lib/deals";
+import { DealCard } from "@/components/DealCard";
 
 export const metadata = {
   title: "Deals — Modular Equity",
@@ -11,6 +13,11 @@ export const metadata = {
 export default async function DealsPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
+
+  const rows = await prisma.deal.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  const deals = rows.map(toDealListItem);
 
   return (
     <div className="space-y-8">
@@ -37,42 +44,29 @@ export default async function DealsPage() {
           </a>
           .
         </p>
+        {session.user.role === "EMPLOYEE" ? (
+          <p className="mt-3">
+            <Link
+              href="/dashboard/team/deals/new"
+              className="text-sm font-medium text-accent hover:underline"
+            >
+              Add a new deal (team) →
+            </Link>
+          </p>
+        ) : null}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {DEALS.map((deal) => (
-          <Link
-            key={deal.slug}
-            href={`/dashboard/deals/${deal.slug}`}
-            className="group rounded-xl border border-border bg-card p-6 transition hover:border-accent/50 hover:shadow-md"
-          >
-            <p className="text-xs font-medium uppercase tracking-wide text-accent">
-              {deal.status}
-            </p>
-            <h2 className="mt-2 font-semibold text-foreground group-hover:text-accent">
-              {deal.name}
-            </h2>
-            <p className="mt-1 text-sm text-muted">
-              {deal.city}, {deal.state}
-            </p>
-            <p className="mt-3 line-clamp-3 text-sm text-muted leading-relaxed">
-              {deal.summary}
-            </p>
-            <span className="mt-4 inline-flex text-sm font-medium text-accent">
-              Open deal →
-            </span>
-          </Link>
+      <div className="grid gap-6 sm:grid-cols-2">
+        {deals.map((deal) => (
+          <DealCard key={deal.id} deal={deal} />
         ))}
-        <div className="rounded-xl border border-dashed border-border bg-card/80 p-6">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">
-            Pipeline
-          </p>
-          <h2 className="mt-2 font-semibold text-foreground">More deals</h2>
-          <p className="mt-2 text-sm text-muted">
-            Additional opportunities will appear here as they open.
-          </p>
-        </div>
       </div>
+
+      {deals.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted">
+          No deals yet. Employees can add deals from Team → Add deal.
+        </p>
+      ) : null}
     </div>
   );
 }

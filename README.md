@@ -59,3 +59,5 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 | `EMAIL_FROM` | *Optional* — override default `Modular Equity <noreply@modularequity.com>` |
 
 **Plaid:** `PLAID_CLIENT_ID`, `PLAID_SECRET` or **`PLAID_API_SECRET`** (same value), optional `PLAID_ENV` (`sandbox` / `production`). See `docs/plaid-mcp.md`.
+
+**Deals:** Stored in Postgres (`Deal` model). **Employees** (`@modularequity.com`) add deals at **`/dashboard/team/deals/new`** — listing URL is used to fetch an **Open Graph** image for thumbnails. `POST /api/deals` / `PATCH /api/deals/[slug]` are employee-only.
