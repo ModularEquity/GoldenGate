@@ -26,7 +26,7 @@ npx prisma migrate deploy
 npm run dev
 ```
 
-**Vercel:** set `DATABASE_URL`, use **`npm run build:vercel`** as the build command (runs migrations).
+**Vercel + Neon:** after connecting Neon, **redeploy** so migrations run. Post-checklist: [docs/database-vercel-postgres.md](./docs/database-vercel-postgres.md#after-neon-is-integrated--quick-checklist).
 
 - Home: [http://localhost:3000](http://localhost:3000)
 - Register email: [http://localhost:3000/register](http://localhost:3000/register) → magic link email → **set password** → **dashboard**

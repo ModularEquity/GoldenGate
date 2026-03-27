@@ -15,7 +15,36 @@ So: **you can still use Postgres with Vercel** — install a Marketplace integra
 2. Connect the integration so **`DATABASE_URL`** is injected into your environment.
 3. **Build:** This repo includes **`vercel.json`** so the default build runs **`npm run build:vercel`** (`prisma migrate deploy` + `next build`). If you override the build command in the Vercel UI, use the same.
 
-4. Redeploy.
+4. **Redeploy** the latest commit so the build runs `prisma migrate deploy` and creates tables.
+
+---
+
+## After Neon is integrated — quick checklist
+
+| Step | What to verify |
+|------|----------------|
+| **Env** | **Vercel → Settings → Environment Variables:** `DATABASE_URL` is present for **Production** (and **Preview** if you want DB on preview deploys). |
+| **Build** | Latest deploy **succeeds** — if the build fails at `prisma migrate deploy`, see *Troubleshooting* below. |
+| **Smoke test** | Open your site → **Register** with an email → confirm row in **Neon SQL Editor** (`User` table) or that registration returns success. |
+| **Local dev** | Copy the **connection string** from Neon (Dashboard → your project → **Connection details**) into local `.env` as `DATABASE_URL` if you want the same DB as production, or create a **separate Neon branch / dev project** (recommended). |
+
+### Troubleshooting: `migrate deploy` errors on Vercel
+
+Neon often provides a **pooled** URL (PgBouncer, `-pooler` host or port `6432`). Prisma **queries** work with that; **`prisma migrate`** sometimes needs a **direct** (non-pooled) connection.
+
+1. In Neon, copy the **direct** connection string (non-pooling).
+2. In Vercel, add **`DIRECT_URL`** with that value.
+3. Add to `prisma/schema.prisma` (we can add this in-repo if you hit the error):
+
+   ```prisma
+   datasource db {
+     provider  = "postgresql"
+     url       = env("DATABASE_URL")
+     directUrl = env("DIRECT_URL")
+   }
+   ```
+
+Redeploy after changing the schema.
 
 ---
 
