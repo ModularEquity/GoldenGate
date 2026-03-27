@@ -30,9 +30,11 @@ npm run dev
 npm run build
 ```
 
-### Email (welcome link)
+### Email (Resend)
 
-Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal** (dev). For real emails, add [Resend](https://resend.com) and set `RESEND_API_KEY`, `EMAIL_FROM`, and `APP_URL` (your Vercel URL).
+Registered Resend? See **[docs/resend-and-production.md](./docs/resend-and-production.md)** for API key, verified **sender domain**, **`APP_URL`** for magic links, and production **Postgres** + **`AUTH_SECRET`**.
+
+Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal** (dev only).
 
 ### Environment
 
