@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
+import { DEALS } from "@/lib/deals";
 
 export const metadata = {
   title: "Deals — Modular Equity",
@@ -39,30 +40,38 @@ export default async function DealsPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {[
-          {
-            title: "Sample renovation — Austin, TX",
-            status: "Open for review",
-            detail:
-              "Underwriting summary, renovation budget, exit comps — placeholder; add files to the Deal room folder.",
-          },
-          {
-            title: "Pipeline",
-            status: "Coming soon",
-            detail: "Additional deals will list here as they open.",
-          },
-        ].map((deal) => (
-          <div
-            key={deal.title}
-            className="rounded-xl border border-border bg-card p-6"
+        {DEALS.map((deal) => (
+          <Link
+            key={deal.slug}
+            href={`/dashboard/deals/${deal.slug}`}
+            className="group rounded-xl border border-border bg-card p-6 transition hover:border-accent/50 hover:shadow-md"
           >
             <p className="text-xs font-medium uppercase tracking-wide text-accent">
               {deal.status}
             </p>
-            <h2 className="mt-2 font-semibold text-foreground">{deal.title}</h2>
-            <p className="mt-2 text-sm text-muted">{deal.detail}</p>
-          </div>
+            <h2 className="mt-2 font-semibold text-foreground group-hover:text-accent">
+              {deal.name}
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              {deal.city}, {deal.state}
+            </p>
+            <p className="mt-3 line-clamp-3 text-sm text-muted leading-relaxed">
+              {deal.summary}
+            </p>
+            <span className="mt-4 inline-flex text-sm font-medium text-accent">
+              Open deal →
+            </span>
+          </Link>
         ))}
+        <div className="rounded-xl border border-dashed border-border bg-card/80 p-6">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted">
+            Pipeline
+          </p>
+          <h2 className="mt-2 font-semibold text-foreground">More deals</h2>
+          <p className="mt-2 text-sm text-muted">
+            Additional opportunities will appear here as they open.
+          </p>
+        </div>
       </div>
     </div>
   );

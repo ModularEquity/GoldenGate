@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { userOnboardingSelect } from "@/lib/onboarding-status";
-import { CompleteStepButton } from "@/components/CompleteStepButton";
+import { parseTaxProfile } from "@/lib/tax-profile";
 import { OnboardingStepCard } from "@/components/OnboardingStepCard";
+import { TaxIntakeForm } from "@/components/TaxIntakeForm";
 
 export const metadata = { title: "Tax forms — Modular Equity" };
 
@@ -14,11 +15,15 @@ export default async function TaxOnboardingPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: userOnboardingSelect,
+    select: {
+      ...userOnboardingSelect,
+      taxProfileJson: true,
+    },
   });
   if (!user) redirect("/login");
 
   const complete = user.taxCompletedAt != null;
+  const profile = parseTaxProfile(user.taxProfileJson);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -34,38 +39,13 @@ export default async function TaxOnboardingPage() {
         title="Tax — W-9 / W-8BEN / W-8BEN-E"
         description={
           <>
-            US persons: <strong className="text-foreground">W-9</strong>. Non-US
-            persons: <strong className="text-foreground">W-8BEN</strong> or{" "}
-            <strong className="text-foreground">W-8BEN-E</strong> for entities.
-            DocSign will collect certified forms; use this step to track readiness.
+            Enter your information below. We store <strong>only the last 4 digits</strong>{" "}
+            of your TIN for reference. After saving, download a PDF summary for your
+            records — retain official IRS forms as required.
           </>
         }
       >
-        <ul className="list-inside list-disc space-y-2 text-sm text-muted">
-          <li>
-            <strong className="text-foreground">W-9</strong> — U.S. taxpayer
-            identification (individuals and US entities).
-          </li>
-          <li>
-            <strong className="text-foreground">W-8BEN</strong> — Foreign
-            individuals claiming treaty benefits.
-          </li>
-          <li>
-            <strong className="text-foreground">W-8BEN-E</strong> — Foreign
-            entities.
-          </li>
-        </ul>
-        <p className="mt-4 text-sm text-muted">
-          When your tax form path is ready for DocSign (or submitted outside
-          this portal), mark complete.
-        </p>
-        <div className="mt-4">
-          <CompleteStepButton
-            step="tax"
-            complete={complete}
-            label="Mark tax path complete"
-          />
-        </div>
+        <TaxIntakeForm initialProfile={profile} />
       </OnboardingStepCard>
     </div>
   );

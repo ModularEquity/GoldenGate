@@ -164,11 +164,11 @@ export default async function OnboardingPage() {
             href="/dashboard/onboarding/tax"
             className="inline-flex text-sm font-medium text-accent hover:underline"
           >
-            Open tax forms screen →
+            Open tax intake & PDF →
           </Link>
-          <div className="mt-4">
-            <CompleteStepButton step="tax" complete={steps[2]!.complete} />
-          </div>
+          <p className="mt-3 text-xs text-muted">
+            Complete the form on the tax screen — it saves your profile and generates a PDF.
+          </p>
         </OnboardingStepCard>
 
         <OnboardingStepCard

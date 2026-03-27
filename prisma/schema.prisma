@@ -35,6 +35,8 @@ model User {
   ppmRiskCompletedAt         DateTime?
   /** W-9 / W-8 tax path submitted */
   taxCompletedAt             DateTime?
+  /** Saved tax intake (W-9 / W-8BEN / W-8BEN-E style fields) for PDF generation */
+  taxProfileJson             Json?
   /** Mercury wire instructions read (optional without bank link) */
   wireInstructionsAcknowledgedAt DateTime?
   createdAt       DateTime         @default(now())

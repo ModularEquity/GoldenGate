@@ -8,15 +8,27 @@ import { authConfig } from "@/auth.config";
 import { roleFromEmail } from "@/lib/roles";
 import { getAuthSecret } from "@/lib/auth-secret";
 
-/** OAuth providers need a canonical site URL; Vercel sets VERCEL_URL automatically. */
-function ensureAuthUrlFromVercel() {
+/**
+ * OAuth redirect_uri must match Google Console exactly. On custom domains,
+ * VERCEL_URL is often still *.vercel.app — set AUTH_URL or APP_URL to
+ * https://modularequity.com (see docs/google-oauth.md).
+ */
+function ensureAuthUrl() {
   if (process.env.AUTH_URL?.trim() || process.env.NEXTAUTH_URL?.trim()) return;
-  const v = process.env.VERCEL_URL?.trim();
-  if (v) {
-    process.env.AUTH_URL = v.startsWith("http") ? v : `https://${v}`;
+
+  const candidates = [
+    process.env.APP_URL?.trim(),
+    process.env.NEXT_PUBLIC_APP_URL?.trim(),
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim(),
+    process.env.VERCEL_URL?.trim(),
+  ].filter(Boolean) as string[];
+
+  const pick = candidates[0];
+  if (pick) {
+    process.env.AUTH_URL = pick.startsWith("http") ? pick : `https://${pick}`;
   }
 }
-ensureAuthUrlFromVercel();
+ensureAuthUrl();
 
 const googleConfigured =
   Boolean(process.env.AUTH_GOOGLE_ID?.trim()) &&

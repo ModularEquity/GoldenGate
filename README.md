@@ -51,7 +51,7 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 | `goldengate_DATABASE_URL` | **PostgreSQL** pooled (Neon / Vercel — prefixed by integration) |
 | `goldengate_POSTGRES_URL_NON_POOLING` | **Direct** URL for migrations (local: same as pooled URL) |
 | `AUTH_SECRET` | Random string for **session signing** (min 32 chars). **Not** the Google OAuth secret. Generate: `npm run auth:secret`. On **Vercel**, if unset, the app uses a **stable fallback** derived from `VERCEL_PROJECT_ID` so deploys don’t 500 — still set **`AUTH_SECRET`** for production. |
-| `AUTH_URL` | *Optional on Vercel* — if unset, the app sets it from **`VERCEL_URL`** (HTTPS) so Google OAuth callbacks work |
+| `AUTH_URL` or **`APP_URL`** or **`NEXT_PUBLIC_APP_URL`** | **Set to `https://modularequity.com`** (no trailing slash) if you use a custom domain — fixes **`redirect_uri_mismatch`** when `VERCEL_URL` is still `*.vercel.app` |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google sign-in (register + login) |
 | Google OAuth redirect | **Required in Google Cloud:** `https://<your-domain>/api/auth/callback/google` — see **[docs/google-oauth.md](./docs/google-oauth.md)** |
 | `RESEND_API_KEY` | Transactional email (welcome / reset) |

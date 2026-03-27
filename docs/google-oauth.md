@@ -34,7 +34,16 @@ https://<your-host>/api/auth/callback/google
 - `AUTH_GOOGLE_ID` — Client ID  
 - `AUTH_GOOGLE_SECRET` — Client secret  
 
-Optional: `AUTH_URL` = `https://your-production-domain.com` if the app should use your custom domain for OAuth (instead of only `VERCEL_URL`).
+**Custom domain (`redirect_uri_mismatch`):** If users sign in at `https://modularequity.com` but Google still fails, NextAuth may be using the wrong base URL. Set **one** of these in Vercel (Production) to your **exact** public origin (no trailing slash):
+
+- `AUTH_URL` = `https://modularequity.com`  
+- or `APP_URL` = `https://modularequity.com`  
+- or `NEXT_PUBLIC_APP_URL` = `https://modularequity.com`
+
+The app picks the first available. Then add **both** redirect URIs in Google Console if you use custom domain **and** `*.vercel.app`:
+
+- `https://modularequity.com/api/auth/callback/google`
+- `https://<project>.vercel.app/api/auth/callback/google`
 
 ## Troubleshooting
 
