@@ -53,6 +53,7 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 | `AUTH_SECRET` | Random string for **session signing** (min 32 chars). **Not** the Google OAuth secret. Generate: `npm run auth:secret`. On **Vercel**, if unset, the app uses a **stable fallback** derived from `VERCEL_PROJECT_ID` so deploys don’t 500 — still set **`AUTH_SECRET`** for production. |
 | `AUTH_URL` | *Optional on Vercel* — if unset, the app sets it from **`VERCEL_URL`** (HTTPS) so Google OAuth callbacks work |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google sign-in (register + login) |
+| Google OAuth redirect | **Required in Google Cloud:** `https://<your-domain>/api/auth/callback/google` — see **[docs/google-oauth.md](./docs/google-oauth.md)** |
 | `RESEND_API_KEY` | Transactional email (welcome / reset) |
 | `APP_URL` | *Optional* — magic-link base URL; else **`VERCEL_URL`** |
 | `EMAIL_FROM` | *Optional* — override default `Modular Equity <noreply@modularequity.com>` |
