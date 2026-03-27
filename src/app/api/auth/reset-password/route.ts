@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/auth-password";
-import { createSessionCookie } from "@/lib/auth-session";
+import { applySessionToResponse } from "@/lib/auth-session";
 import { hashToken } from "@/lib/tokens";
 
 export async function POST(request: Request) {
@@ -63,13 +63,19 @@ export async function POST(request: Request) {
       }),
     ]);
 
-    await createSessionCookie(record.user.id, record.user.email);
-
-    return NextResponse.json({ ok: true });
+    const res = NextResponse.json({ ok: true });
+    await applySessionToResponse(res, record.user.id, record.user.email);
+    return res;
   } catch (e) {
     console.error("[reset-password]", e);
+    const detail =
+      e instanceof Error ? e.message : "unknown";
     return NextResponse.json(
-      { ok: false, error: "Could not reset password. Try again." },
+      {
+        ok: false,
+        error: "Could not reset password. Try again.",
+        ...(process.env.NODE_ENV === "development" ? { debug: detail } : {}),
+      },
       { status: 500 },
     );
   }

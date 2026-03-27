@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth-password";
-import { createSessionCookie } from "@/lib/auth-session";
+import { applySessionToResponse } from "@/lib/auth-session";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -43,9 +43,9 @@ export async function POST(request: Request) {
       );
     }
 
-    await createSessionCookie(user.id, user.email);
-
-    return NextResponse.json({ ok: true });
+    const res = NextResponse.json({ ok: true });
+    await applySessionToResponse(res, user.id, user.email);
+    return res;
   } catch (e) {
     console.error("[login]", e);
     return NextResponse.json(

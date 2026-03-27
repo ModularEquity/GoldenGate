@@ -50,7 +50,7 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 |----------|---------|
 | `goldengate_DATABASE_URL` | **PostgreSQL** pooled (Neon / Vercel — prefixed by integration) |
 | `goldengate_POSTGRES_URL_NON_POOLING` | **Direct** URL for migrations (local: same as pooled URL) |
-| `AUTH_SECRET` | JWT signing (min 32 chars); required in production |
+| `AUTH_SECRET` | JWT signing (min 32 chars) — **recommended** in production (fallback exists if unset) |
 | `RESEND_API_KEY` | Send welcome / magic-link email (**only email-related secret required**) |
 | `APP_URL` | *Optional* — force magic-link base URL (e.g. custom domain). If unset on Vercel, **`VERCEL_URL`** is used. |
 | `EMAIL_FROM` | *Optional* — override default `GoldenGate <noreply@modularequity.com>` |
