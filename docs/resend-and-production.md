@@ -32,7 +32,8 @@ Links look like: `{base}/set-password?token=...`
 
 | Variable | Why |
 |----------|-----|
-| **`AUTH_SECRET`** | Signs session JWTs. Min **32 characters**. Generate: `openssl rand -base64 32`. **Required** in production (dev has a fallback; prod does not). |
+| **`AUTH_SECRET`** | Signs session JWTs. Min **32 characters**. Generate: `openssl rand -base64 32`. **Required** in production (dev has a fallback; prod does not). Must match between the NextAuth route and **middleware** (both use the same helper). |
+| **`AUTH_URL`** | Canonical site URL for OAuth. **Optional on Vercel:** if omitted, the app derives `https://{VERCEL_URL}`. Set explicitly if you use a custom domain and OAuth misbehaves. |
 | **`DATABASE_URL`** | On **Vercel**, use **Postgres** (Neon, Supabase, Vercel Postgres, etc.). SQLite files don’t persist on serverless. Run migrations: `npx prisma migrate deploy` in CI or Vercel build. |
 
 ## 5. Vercel build + database

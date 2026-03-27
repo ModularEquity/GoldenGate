@@ -78,7 +78,7 @@ Open `http://localhost:3000`. Build: `npm run build`.
 ## Auth & data (implemented)
 
 - **PostgreSQL + Prisma** — local Docker or cloud; Vercel uses Marketplace Postgres (e.g. Neon). See `docs/database-vercel-postgres.md`.
-- **NextAuth (Auth.js)** — Google OAuth + credentials; JWT sessions; **`UserRole`**: `INVESTOR` vs `EMPLOYEE` (email `@modularequity.com` → Employee).
+- **NextAuth (Auth.js)** — Google OAuth + credentials; JWT sessions; **`UserRole`**: `INVESTOR` vs `EMPLOYEE` (email `@modularequity.com` → Employee). Production needs **`AUTH_SECRET`** (≥32 chars); **`AUTH_URL`** is optional on Vercel (derived from **`VERCEL_URL`** if unset).
 - **Magic link** with purpose: `SET_PASSWORD` (welcome) vs `RESET_PASSWORD` (forgot flow); 24h TTL; **bcrypt** for passwords.
 - **Email**: `RESEND_API_KEY`; default `From` is `Modular Equity <noreply@modularequity.com>`. See `docs/resend-and-production.md`.
 
