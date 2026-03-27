@@ -50,7 +50,7 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 |----------|---------|
 | `goldengate_DATABASE_URL` | **PostgreSQL** pooled (Neon / Vercel — prefixed by integration) |
 | `goldengate_POSTGRES_URL_NON_POOLING` | **Direct** URL for migrations (local: same as pooled URL) |
-| `AUTH_SECRET` | **Required** in production for NextAuth (min 32 chars) |
+| `AUTH_SECRET` | **Required** in production — random string for **session signing** (min 32 chars). **Not** the Google OAuth secret. Generate: `npm run auth:secret` |
 | `AUTH_URL` | *Optional on Vercel* — if unset, the app sets it from **`VERCEL_URL`** (HTTPS) so Google OAuth callbacks work |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google sign-in (register + login) |
 | `RESEND_API_KEY` | Transactional email (welcome / reset) |

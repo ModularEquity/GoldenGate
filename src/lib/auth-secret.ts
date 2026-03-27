@@ -1,6 +1,12 @@
 /**
  * Single source of truth for the secret used by NextAuth and middleware JWT checks.
  * On Vercel, set **AUTH_SECRET** (or legacy NEXTAUTH_SECRET) to a random string ≥ 32 chars.
+ *
+ * We do **not** generate this at request time or on every cold start: a new secret would
+ * invalidate all sessions and break login until cookies refresh. Generate once with
+ * `npm run auth:secret` and store in env.
+ *
+ * **Not** the same as `AUTH_GOOGLE_SECRET` (Google OAuth client secret).
  */
 export function getAuthSecret(): string {
   const fromEnv =
