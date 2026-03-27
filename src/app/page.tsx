@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PartnerLogos } from "@/components/PartnerLogos";
 
 export default function HomePage() {
   return (
@@ -64,12 +65,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted">
-        <p>
-          Integrations: Vercel · GitHub · Plaid · Mercury — scaffold only;
-          connect keys via environment when you wire production flows.
-        </p>
-      </section>
+      <PartnerLogos />
     </div>
   );
 }
