@@ -47,7 +47,8 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 
 | Variable | Purpose |
 |----------|---------|
-| `DATABASE_URL` | **PostgreSQL** — local via `docker compose` or Neon/Supabase; see [docs/database-vercel-postgres.md](./docs/database-vercel-postgres.md) |
+| `DATABASE_URL` | **PostgreSQL** (pooled Neon URL on Vercel) |
+| `DIRECT_URL` | **PostgreSQL direct** (Neon non-pooling — required for migrations); local: same as `DATABASE_URL` |
 | `AUTH_SECRET` | JWT signing (min 32 chars); required in production |
 | `RESEND_API_KEY` | Send welcome / magic-link email (**only email-related secret required**) |
 | `APP_URL` | *Optional* — force magic-link base URL (e.g. custom domain). If unset on Vercel, **`VERCEL_URL`** is used. |
