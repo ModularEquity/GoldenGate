@@ -29,7 +29,8 @@ npm run dev
 **Vercel + Neon:** after connecting Neon, **redeploy** so migrations run. Post-checklist: [docs/database-vercel-postgres.md](./docs/database-vercel-postgres.md#after-neon-is-integrated--quick-checklist).
 
 - Home: [http://localhost:3000](http://localhost:3000)
-- Register email: [http://localhost:3000/register](http://localhost:3000/register) → magic link email → **set password** → **dashboard**
+- **Login:** `/login` — email + password; **Forgot password** → reset link → `/reset-password`
+- Register: `/register` → magic link → **set password** → **dashboard** (`/dashboard` hub + investor sections)
 
 ```bash
 npm run build
