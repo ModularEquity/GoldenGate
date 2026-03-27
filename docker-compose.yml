@@ -1,0 +1,15 @@
+# Local Postgres for Prisma (matches docs/database-vercel-postgres.md)
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: goldengate
+      POSTGRES_PASSWORD: goldengate
+      POSTGRES_DB: goldengate
+    volumes:
+      - goldengate_pgdata:/var/lib/postgresql/data
+
+volumes:
+  goldengate_pgdata:

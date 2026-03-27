@@ -1,11 +1,11 @@
-// Dev default: SQLite. For production set DATABASE_URL to Postgres (Neon, Vercel Postgres, etc.)
+// PostgreSQL everywhere (local + Vercel). See docs/database-vercel-postgres.md
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

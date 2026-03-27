@@ -71,7 +71,7 @@ Open `http://localhost:3000`. Build: `npm run build`.
 
 ## Auth & data (implemented)
 
-- **SQLite + Prisma** locally; use `DATABASE_URL` Postgres on Vercel.
+- **PostgreSQL + Prisma** — local Docker or cloud; Vercel uses Marketplace Postgres (e.g. Neon). See `docs/database-vercel-postgres.md`.
 - **Magic link** (hashed token, 24h TTL) + **bcrypt** password + **JWT** session cookie (`gg_session`).
 - **Email**: `RESEND_API_KEY` only; default `From` is `noreply@modularequity.com`; magic links use Vercel `VERCEL_URL` unless `APP_URL` is set. See `docs/resend-and-production.md`.
 

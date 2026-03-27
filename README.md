@@ -16,12 +16,17 @@ Versioned Mermaid diagram: [docs/flow.md](./docs/flow.md). Use **Figma** or **Lu
 
 ## Develop
 
+PostgreSQL is required (see **[docs/database-vercel-postgres.md](./docs/database-vercel-postgres.md)**).
+
 ```bash
-cp .env.example .env   # optional; defaults work for local SQLite
+cp .env.example .env
 npm install
-npx prisma migrate dev   # first time: creates prisma/dev.db
+docker compose up -d
+npx prisma migrate deploy
 npm run dev
 ```
+
+**Vercel:** set `DATABASE_URL`, use **`npm run build:vercel`** as the build command (runs migrations).
 
 - Home: [http://localhost:3000](http://localhost:3000)
 - Register email: [http://localhost:3000/register](http://localhost:3000/register) → magic link email → **set password** → **dashboard**
@@ -42,7 +47,7 @@ Without **`RESEND_API_KEY`**, the magic link is **printed in the server terminal
 
 | Variable | Purpose |
 |----------|---------|
-| `DATABASE_URL` | SQLite file locally (`file:./dev.db`); **use Postgres** on Vercel (serverless can’t persist SQLite) |
+| `DATABASE_URL` | **PostgreSQL** — local via `docker compose` or Neon/Supabase; see [docs/database-vercel-postgres.md](./docs/database-vercel-postgres.md) |
 | `AUTH_SECRET` | JWT signing (min 32 chars); required in production |
 | `RESEND_API_KEY` | Send welcome / magic-link email (**only email-related secret required**) |
 | `APP_URL` | *Optional* — force magic-link base URL (e.g. custom domain). If unset on Vercel, **`VERCEL_URL`** is used. |
