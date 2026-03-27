@@ -41,7 +41,9 @@ High-level steps for implementation and UX alignment:
 ## Screens (MVP scaffold)
 
 1. **Home** — Value prop, firm focus (PE + real estate renovations), CTA to register.
-2. **Register email** — Collect email; later: magic link or redirect into full onboarding.
+2. **Register email** — Submit email → **welcome email with magic link** (Resend in prod; link logged in dev if no API key).
+3. **Set password** (`/set-password?token=…`) — One-time link from email; user sets password → session cookie.
+4. **Dashboard** (`/dashboard`) — Post-auth shell; welcome packet / DocSign content to be wired next.
 
 Additional routes should mirror the journey above as features are built.
 
@@ -67,6 +69,10 @@ npm run dev
 
 Open `http://localhost:3000`. Build: `npm run build`.
 
-## Out of scope for initial scaffold
+## Auth & data (implemented)
 
-Production Plaid/Mercury/DocSign wiring, auth sessions, and database — add incrementally with tickets.
+- **SQLite + Prisma** locally; use `DATABASE_URL` Postgres on Vercel.
+- **Magic link** (hashed token, 24h TTL) + **bcrypt** password + **JWT** session cookie (`gg_session`).
+- **Email**: `RESEND_API_KEY` + `EMAIL_FROM`; without Resend, dev servers log the link.
+
+Still incremental: Plaid/Mercury/DocSign, Postgres migration for production.

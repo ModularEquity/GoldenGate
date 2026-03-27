@@ -5,7 +5,10 @@ Use this in GitHub/GitLab previews or any Mermaid renderer. Aligns with `AGENTS.
 ```mermaid
 flowchart TD
   A[Home] --> B[Register Email]
-  B --> C[Register Investor Account - DocSign]
+  B --> B1[Email: magic link]
+  B1 --> B2[Set password]
+  B2 --> B3[Dashboard]
+  B3 --> C[Register Investor Account - DocSign]
   C --> D[Questionnaire - DocSign]
   D --> E[PPM - Read-only]
   E --> F[Risk Disclosures - DocSign]

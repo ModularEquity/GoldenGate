@@ -1,0 +1,31 @@
+// Dev default: SQLite. For production set DATABASE_URL to Postgres (Neon, Vercel Postgres, etc.)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  passwordHash   String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  magicLinkTokens MagicLinkToken[]
+}
+
+model MagicLinkToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}

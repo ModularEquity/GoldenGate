@@ -19,3 +19,7 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# SQLite (local)
+prisma/dev.db
+prisma/dev.db-journal

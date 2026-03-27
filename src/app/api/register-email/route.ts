@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { getAppUrl } from "@/lib/app-url";
+import { sendWelcomeMagicLink } from "@/lib/email";
+import { generateRawToken, hashToken } from "@/lib/tokens";
 
-const EMAIL_RE =
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as { email?: string };
-    const email = typeof body.email === "string" ? body.email.trim() : "";
+    const raw = typeof body.email === "string" ? body.email.trim() : "";
+    const email = raw.toLowerCase();
 
     if (!email || !EMAIL_RE.test(email)) {
       return NextResponse.json(
@@ -15,14 +19,39 @@ export async function POST(request: Request) {
       );
     }
 
-    // Scaffold: log server-side; replace with DB / CRM / email provider.
-    console.info("[register-email]", { email, at: new Date().toISOString() });
+    const user = await prisma.user.upsert({
+      where: { email },
+      create: { email },
+      update: {},
+    });
+
+    await prisma.magicLinkToken.deleteMany({
+      where: { userId: user.id, usedAt: null },
+    });
+
+    const rawToken = generateRawToken();
+    const tokenHash = hashToken(rawToken);
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await prisma.magicLinkToken.create({
+      data: {
+        tokenHash,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    const base = getAppUrl();
+    const magicLinkUrl = `${base}/set-password?token=${encodeURIComponent(rawToken)}`;
+
+    await sendWelcomeMagicLink({ to: email, magicLinkUrl });
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (e) {
+    console.error("[register-email]", e);
     return NextResponse.json(
-      { ok: false, error: "Invalid request body." },
-      { status: 400 },
+      { ok: false, error: "Could not complete registration. Try again later." },
+      { status: 500 },
     );
   }
 }

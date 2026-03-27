@@ -27,7 +27,9 @@ export function RegisterEmailForm() {
       }
 
       setStatus("success");
-      setMessage("Thanks — we’ve recorded your email. Next: full investor onboarding.");
+      setMessage(
+        "Check your inbox for a welcome email with a link to set your password. If you don’t see it, check spam—or look at the server console in local development.",
+      );
       setEmail("");
     } catch {
       setStatus("error");
