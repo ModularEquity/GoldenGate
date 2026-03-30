@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import {
-  MCP_OVERVIEW_URL,
-  TECHNICAL_CATALOGUE,
-} from "@/lib/technical-catalogue";
+import { TechnicalCatalogueAccordions } from "@/components/TechnicalCatalogueAccordions";
+import { MCP_OVERVIEW_URL, TECHNICAL_CATALOGUE } from "@/lib/technical-catalogue";
 
 export const metadata = {
   title: "Technical catalogue — Modular Equity",
@@ -29,14 +27,17 @@ export default async function TechnicalCataloguePage() {
           Technical catalogue
         </h1>
         <p className="mt-3 max-w-3xl text-muted">
-          Internal reference for our stack: hosting, data, auth, integrations, and
-          where to read vendor docs — including{" "}
-          <strong className="text-foreground">Model Context Protocol (MCP)</strong>{" "}
-          resources per tool when available. Mirrors the spirit of the public{" "}
+          Transparency into how we operate: the{" "}
+          <strong className="text-foreground">systems diagram</strong> below shows how
+          capital, data, and integrations connect. Expand{" "}
+          <strong className="text-foreground">Tools</strong> for the full vendor list and
+          documentation links (including{" "}
+          <strong className="text-foreground">Model Context Protocol (MCP)</strong> where
+          applicable). Mirrors the spirit of the public{" "}
           <Link href="/" className="text-accent hover:underline">
             integration partners
           </Link>{" "}
-          strip on the home page, with full detail for members.
+          strip on the home page, with detail for members.
         </p>
         <p className="mt-2 text-sm text-muted">
           MCP overview:{" "}
@@ -51,82 +52,15 @@ export default async function TechnicalCataloguePage() {
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
-        <table className="w-full min-w-[720px] border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-border bg-background/80">
-              <th className="px-4 py-3 font-semibold text-foreground">Tool</th>
-              <th className="px-4 py-3 font-semibold text-foreground">Category</th>
-              <th className="px-4 py-3 font-semibold text-foreground">Role</th>
-              <th className="px-4 py-3 font-semibold text-foreground">Website</th>
-              <th className="px-4 py-3 font-semibold text-foreground">
-                Developer docs
-              </th>
-              <th className="px-4 py-3 font-semibold text-foreground">MCP docs</th>
-            </tr>
-          </thead>
-          <tbody>
-            {TECHNICAL_CATALOGUE.map((row) => (
-              <tr
-                key={row.name}
-                className="border-b border-border/80 last:border-0 hover:bg-background/40"
-              >
-                <td className="px-4 py-3 font-medium text-foreground">
-                  {row.name}
-                </td>
-                <td className="px-4 py-3 text-muted">{row.category}</td>
-                <td className="max-w-xs px-4 py-3 text-muted">{row.description}</td>
-                <td className="px-4 py-3">
-                  <a
-                    href={row.websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-accent hover:underline"
-                  >
-                    Home ↗
-                  </a>
-                </td>
-                <td className="px-4 py-3">
-                  <a
-                    href={row.docsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-accent hover:underline"
-                    title={row.docsUrl}
-                  >
-                    Docs ↗
-                  </a>
-                </td>
-                <td className="px-4 py-3">
-                  {row.mcpUrl ? (
-                    <a
-                      href={row.mcpUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-accent hover:underline"
-                      title={row.mcpUrl}
-                    >
-                      MCP ↗
-                    </a>
-                  ) : (
-                    <span className="text-muted" title="No vendor MCP page">
-                      —
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <TechnicalCatalogueAccordions items={TECHNICAL_CATALOGUE} />
 
       <section className="rounded-xl border border-dashed border-border bg-card/80 p-6">
         <h2 className="font-medium text-foreground">Notes</h2>
         <ul className="mt-3 list-inside list-disc space-y-2 text-sm text-muted">
           <li>
             Production database is <strong className="text-foreground">Neon</strong>{" "}
-            Postgres; <strong className="text-foreground">Supabase</strong> is listed
-            for reference and MCP patterns, not as our primary host unless we migrate.
+            Postgres; <strong className="text-foreground">Supabase</strong> is listed for
+            reference and MCP patterns, not as our primary host unless we migrate.
           </li>
           <li>
             When a tool has no dedicated MCP page, use the{" "}
