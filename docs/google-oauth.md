@@ -63,3 +63,14 @@ See also: `/help/google-signin` on the site.
 
 - **redirect_uri_mismatch** — The URI in the browser’s error must **exactly** match one entry in Google (including `https`, no trailing slash on the callback path unless you added one).
 - **Preview URLs** — Each unique `*.vercel.app` host needs its own redirect URI unless you only test Google login on production.
+
+### GoDaddy “lander” page after choosing a Google account
+
+If the browser ends up on a **GoDaddy** URL like `https://modularequity.com/lander?...` (with `code=`, `scope=`, etc. in the query string), **our app did not send you there** — there is no `/lander` route in the codebase. Google redirects to **exactly** the **Authorized redirect URI** you configured. That usually means one of:
+
+1. **Wrong redirect URI in Google Cloud** — Someone added `https://modularequity.com/lander` (or similar) instead of the NextAuth callback. **Fix:** In [Credentials → your OAuth client → Authorized redirect URIs](https://console.cloud.google.com/apis/credentials), **remove** any `/lander` entry and ensure you have only:
+   - `https://modularequity.com/api/auth/callback/google`
+   - plus your `*.vercel.app` callback if you use it.
+2. **Domain still on GoDaddy parking / not pointing at Vercel** — If `modularequity.com` DNS still points to GoDaddy’s parking or a “Website Builder” placeholder, **any** path (including `/api/auth/callback/google`) can show a generic GoDaddy page and sign-in will fail. **Fix:** In your domain registrar / DNS, point the apex (and `www` if used) to **Vercel** per [Vercel’s custom domain docs](https://vercel.com/docs/concepts/projects/domains) (A/ALIAS/CNAME as required). Until DNS serves your Vercel deployment, OAuth cannot complete on that hostname.
+
+After fixing (1) and/or (2), wait a few minutes for DNS/Google changes, then try again.

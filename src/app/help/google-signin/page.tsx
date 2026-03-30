@@ -64,6 +64,36 @@ export default function GoogleSignInHelpPage() {
         </p>
       </section>
 
+      <section className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-6">
+        <h2 className="font-semibold text-foreground">
+          GoDaddy &quot;lander&quot; page (or `/lander` in the URL)?
+        </h2>
+        <p className="mt-2 text-sm text-muted">
+          If you land on a <strong className="text-foreground">GoDaddy</strong> page with a URL like{" "}
+          <code className="rounded bg-background px-1 text-foreground">
+            .../lander?code=...&amp;scope=...
+          </code>
+          , that is <strong className="text-foreground">not</strong> from this app — we don&apos;t use{" "}
+          <code className="rounded bg-background px-1">/lander</code>. Google sends the user to the{" "}
+          <strong className="text-foreground">Authorized redirect URI</strong> you saved in Google Cloud.
+        </p>
+        <ul className="mt-3 list-inside list-disc space-y-2 text-sm text-muted">
+          <li>
+            <strong className="text-foreground">Wrong URI in Google:</strong> Remove any redirect URI that ends in{" "}
+            <code className="rounded bg-background px-1">/lander</code> and add only{" "}
+            <code className="rounded bg-background px-1">
+              https://modularequity.com/api/auth/callback/google
+            </code>{" "}
+            (and your Vercel URL if needed).
+          </li>
+          <li>
+            <strong className="text-foreground">DNS still at GoDaddy:</strong> If the domain doesn&apos;t point to
+            Vercel yet, Google may hit a parking page instead of our app. Point the domain&apos;s DNS to Vercel and
+            verify the domain in the Vercel dashboard until the site loads your dashboard, then retry Google sign-in.
+          </li>
+        </ul>
+      </section>
+
       <section className="rounded-xl border border-border bg-card p-6">
         <h2 className="font-semibold text-foreground">2 · Match Vercel to your public domain</h2>
         <p className="mt-2 text-sm text-muted">
