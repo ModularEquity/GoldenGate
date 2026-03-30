@@ -24,6 +24,10 @@ const empty = {
   closeDate: "",
   moneyToRenoUsd: "",
   maxSubscriptionPctOfTotalCost: "20",
+  ltvPct: "80",
+  renovationCompleteDate: "",
+  listingDate: "",
+  saleTargetDate: "",
 };
 
 export function DealForm() {
@@ -67,6 +71,10 @@ export function DealForm() {
           maxSubscriptionPctOfTotalCost: f.maxSubscriptionPctOfTotalCost
             ? Number(f.maxSubscriptionPctOfTotalCost)
             : undefined,
+          ltvPct: f.ltvPct ? Number(f.ltvPct) : undefined,
+          renovationCompleteDate: f.renovationCompleteDate || undefined,
+          listingDate: f.listingDate || undefined,
+          saleTargetDate: f.saleTargetDate || undefined,
         }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string; deal?: { slug: string } };
@@ -209,6 +217,46 @@ export function DealForm() {
           <p className="text-xs text-muted">
             Investor cap per deal = this % × total cost (min $5,000).
           </p>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">LTV vs total cost (%)</label>
+          <input
+            value={f.ltvPct}
+            onChange={(e) => set("ltvPct", e.target.value)}
+            inputMode="numeric"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            placeholder="80"
+          />
+          <p className="text-xs text-muted">
+            Debt as % of total project cost; equity = remainder (levered ROE).
+          </p>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Target reno complete</label>
+          <input
+            type="date"
+            value={f.renovationCompleteDate}
+            onChange={(e) => set("renovationCompleteDate", e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Target listing date</label>
+          <input
+            type="date"
+            value={f.listingDate}
+            onChange={(e) => set("listingDate", e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Target sale date</label>
+          <input
+            type="date"
+            value={f.saleTargetDate}
+            onChange={(e) => set("saleTargetDate", e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
         </div>
       </div>
 

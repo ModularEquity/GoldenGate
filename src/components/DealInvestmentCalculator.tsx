@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatPct } from "@/lib/deal-metrics";
+import { equityUsdFromLtv, formatPct } from "@/lib/deal-metrics";
 
 function fmtUsd(n: number) {
   return new Intl.NumberFormat("en-US", {
@@ -12,27 +12,35 @@ function fmtUsd(n: number) {
 }
 
 /**
- * Illustrative: investor share of project profit proportional to principal vs total cost.
+ * Levered: equity = (100-LTV)% of total cost; investor share of profit
+ * scales with principal vs equity (not total cost).
  */
 export function DealInvestmentCalculator({
   totalCostUsd,
   profitUsd,
+  ltvPct,
 }: {
   totalCostUsd: number;
   profitUsd: number;
+  ltvPct: number;
 }) {
   const [principalStr, setPrincipalStr] = useState("10000");
 
+  const equityUsd = useMemo(
+    () => equityUsdFromLtv(totalCostUsd, ltvPct),
+    [totalCostUsd, ltvPct],
+  );
+
   const result = useMemo(() => {
     const p = parseFloat(principalStr.replace(/,/g, ""));
-    if (!Number.isFinite(p) || p <= 0 || totalCostUsd <= 0) {
+    if (!Number.isFinite(p) || p <= 0 || equityUsd <= 0) {
       return null;
     }
-    const share = Math.min(1, p / totalCostUsd);
+    const share = Math.min(1, p / equityUsd);
     const expectedProfit = profitUsd * share;
     const roiPct = p > 0 ? (expectedProfit / p) * 100 : 0;
     return { expectedProfit, roiPct, share };
-  }, [principalStr, totalCostUsd, profitUsd]);
+  }, [principalStr, equityUsd, profitUsd]);
 
   return (
     <section className="rounded-xl border border-border bg-card p-6">
@@ -40,9 +48,12 @@ export function DealInvestmentCalculator({
         Investment calculator
       </h2>
       <p className="mt-2 text-sm text-muted">
-        Illustrative only: assumes your return scales with your share of total
-        project cost (profit × principal ÷ total cost). Not tax, fee, or
-        waterfall adjusted.
+        <strong className="text-foreground">Levered model:</strong> debt is{" "}
+        <strong>{ltvPct}%</strong> of total project cost (LTV); investor equity
+        is the remaining <strong>{100 - ltvPct}%</strong> (
+        {fmtUsd(equityUsd)} on this deal). Your illustrative profit is your
+        share of project profit based on principal vs <em>equity</em>, not total
+        cost. Not tax, fee, or waterfall adjusted.
       </p>
       <div className="mt-6 space-y-4">
         <div className="space-y-2">
@@ -69,13 +80,13 @@ export function DealInvestmentCalculator({
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">Return on your principal (illustrative)</dt>
+                <dt className="text-muted">Return on your principal (levered)</dt>
                 <dd className="font-semibold text-accent">
                   {formatPct(result.roiPct, 2)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4 border-t border-border/50 pt-2 text-xs">
-                <dt className="text-muted">Implied weight vs total cost</dt>
+                <dt className="text-muted">Weight vs equity ({fmtUsd(equityUsd)})</dt>
                 <dd>{formatPct(result.share * 100, 2)}</dd>
               </div>
             </dl>

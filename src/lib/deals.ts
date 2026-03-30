@@ -26,6 +26,10 @@ export type DealDetail = DealListItem & {
   moneyToCloseUsd: number;
   closeDate: Date | null;
   moneyToRenoUsd: number;
+  ltvPct: number;
+  renovationCompleteDate: Date | null;
+  listingDate: Date | null;
+  saleTargetDate: Date | null;
 };
 
 function parseHighlights(json: PrismaDeal["highlights"]): string[] {
@@ -57,6 +61,10 @@ export function toDealDetail(d: PrismaDeal): DealDetail {
     closeDate: d.closeDate,
     moneyToRenoUsd: d.moneyToRenoUsd,
     maxSubscriptionPctOfTotalCost: d.maxSubscriptionPctOfTotalCost,
+    ltvPct: d.ltvPct,
+    renovationCompleteDate: d.renovationCompleteDate,
+    listingDate: d.listingDate,
+    saleTargetDate: d.saleTargetDate,
   };
 }
 

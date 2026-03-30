@@ -52,7 +52,17 @@ export default async function DealDetailPage({ params }: Props) {
     deal.profitUsd,
     deal.totalCostUsd,
     deal.holdPeriodMonths,
+    deal.ltvPct,
   );
+
+  function fmtDate(d: Date | null) {
+    if (!d) return "—";
+    return d.toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
   const statusLabel =
     deal.status === "OPEN"
       ? "Open"
@@ -134,49 +144,80 @@ export default async function DealDetailPage({ params }: Props) {
         </h2>
         <p className="mt-2 text-xs text-muted">
           For discussion only — subject to diligence and definitive documents.
+          Unlevered metrics use total cost; levered ROE assumes{" "}
+          <strong>{deal.ltvPct}%</strong> LTV (debt vs total cost),{" "}
+          <strong>{100 - deal.ltvPct}%</strong> equity.
         </p>
         <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Fin label="Purchase" value={fmtUsd(deal.purchaseUsd)} />
           <Fin label="Sale (exit)" value={fmtUsd(deal.saleUsd)} />
           <Fin label="Hold period" value={`${deal.holdPeriodMonths} months`} />
           <Fin
-            label="Debt financing"
+            label="Debt financing (rate)"
             value={`${deal.debtRatePct.toFixed(2).replace(/\.?0+$/, "")}%`}
+          />
+          <Fin
+            label="LTV vs total cost"
+            value={`${deal.ltvPct}% / ${100 - deal.ltvPct}% equity`}
           />
           <Fin label="Reno budget" value={fmtUsd(deal.renoBudgetUsd)} />
           <Fin label="Transaction fees" value={fmtUsd(deal.transactionFeesUsd)} />
           <Fin label="Total cost" value={fmtUsd(deal.totalCostUsd)} />
           <Fin label="Profit" value={fmtUsd(deal.profitUsd)} />
           <Fin
-            label="% Return (profit / total cost)"
-            value={formatPct(returns.totalReturnPct, 2)}
+            label="% Return — unlevered (profit / total cost)"
+            value={formatPct(returns.unleveredReturnPct, 2)}
           />
           <Fin
-            label="Annualized IRR"
+            label="Annualized IRR — unlevered"
             value={
-              <span className="italic">{formatPct(returns.annualizedIrrPct, 2)}</span>
+              <span className="italic">
+                {formatPct(returns.annualizedUnleveredIrrPct, 2)}
+              </span>
+            }
+          />
+          <Fin
+            label="Levered (actual) ROE — profit / equity"
+            value={formatPct(returns.leveredRoePct, 2)}
+          />
+          <Fin
+            label="Annualized levered IRR (on equity)"
+            value={
+              <span className="italic">
+                {formatPct(returns.annualizedLeveredIrrPct, 2)}
+              </span>
             }
           />
           <Fin label="Money to close" value={fmtUsd(deal.moneyToCloseUsd)} />
           <Fin label="Money to reno" value={fmtUsd(deal.moneyToRenoUsd)} />
+          <Fin label="Target acquisition close" value={fmtDate(deal.closeDate)} />
           <Fin
-            label="Target close date"
-            value={
-              deal.closeDate
-                ? deal.closeDate.toLocaleDateString("en-US", {
-                    month: "numeric",
-                    day: "numeric",
-                    year: "numeric",
-                  })
-                : "—"
-            }
+            label="Target renovation complete"
+            value={fmtDate(deal.renovationCompleteDate)}
           />
+          <Fin label="Target listing date" value={fmtDate(deal.listingDate)} />
+          <Fin label="Target sale date" value={fmtDate(deal.saleTargetDate)} />
         </dl>
+      </section>
+
+      <section className="rounded-xl border border-border bg-card p-6">
+        <h2 className="text-lg font-semibold text-foreground">Documents</h2>
+        <p className="mt-2 text-sm text-muted">
+          Contractor scope & estimate — placeholder PDF until the signed GC
+          package is uploaded.
+        </p>
+        <a
+          href={`/api/deals/${deal.slug}/contractor-scope`}
+          className="mt-4 inline-flex rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-accent hover:bg-accent/5"
+        >
+          Download contractor scope (placeholder PDF) ↓
+        </a>
       </section>
 
       <DealInvestmentCalculator
         totalCostUsd={deal.totalCostUsd}
         profitUsd={deal.profitUsd}
+        ltvPct={deal.ltvPct}
       />
 
       <section className="rounded-xl border border-dashed border-border bg-card/80 p-6">

@@ -106,6 +106,23 @@ export async function PATCH(request: Request, ctx: Ctx) {
     }
   }
 
+  let ltvPct = deal.ltvPct;
+  if (body.ltvPct !== undefined) {
+    const p = Number(body.ltvPct);
+    if (Number.isFinite(p) && p >= 0 && p <= 100) ltvPct = Math.floor(p);
+  }
+
+  const parseDate = (k: string): Date | null | undefined => {
+    if (body[k] === undefined) return undefined;
+    if (typeof body[k] !== "string" || !String(body[k]).trim()) return null;
+    const d = new Date(String(body[k]) + "T12:00:00");
+    return Number.isNaN(d.getTime()) ? undefined : d;
+  };
+
+  const renovationCompleteDate = parseDate("renovationCompleteDate");
+  const listingDate = parseDate("listingDate");
+  const saleTargetDate = parseDate("saleTargetDate");
+
   const updated = await prisma.deal.update({
     where: { id: deal.id },
     data: {
@@ -143,6 +160,12 @@ export async function PATCH(request: Request, ctx: Ctx) {
       closeDate,
       moneyToRenoUsd: numOpt("moneyToRenoUsd") ?? deal.moneyToRenoUsd,
       maxSubscriptionPctOfTotalCost: maxPct,
+      ltvPct,
+      ...(renovationCompleteDate !== undefined
+        ? { renovationCompleteDate }
+        : {}),
+      ...(listingDate !== undefined ? { listingDate } : {}),
+      ...(saleTargetDate !== undefined ? { saleTargetDate } : {}),
     },
   });
 
