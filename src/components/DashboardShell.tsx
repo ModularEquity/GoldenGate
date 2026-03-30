@@ -24,6 +24,8 @@ export function DashboardShell({ isEmployee, children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [autoHide, setAutoHide] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  /** Nav section accordions — default collapsed */
+  const [openSection, setOpenSection] = useState<Record<string, boolean>>({});
 
   const headingId = useId();
 
@@ -109,6 +111,26 @@ export function DashboardShell({ isEmployee, children }: Props) {
       : "text-muted hover:text-foreground";
   };
 
+  function toggleSection(id: string) {
+    setOpenSection((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  /** Expand the section that contains the current route */
+  useEffect(() => {
+    setOpenSection((prev) => {
+      const next = { ...prev };
+      for (const s of DASHBOARD_NAV_SECTIONS) {
+        const activeHere = s.links.some((link) => {
+          const base = pathOnly(link.href);
+          if (base === "/dashboard") return pathname === "/dashboard";
+          return pathname === base || pathname.startsWith(`${base}/`);
+        });
+        if (activeHere) next[s.id] = true;
+      }
+      return next;
+    });
+  }, [pathname]);
+
   return (
     <div className="flex w-full flex-col gap-8 lg:flex-row lg:items-start">
       {/* Peek zone: hover to open when sidebar is hidden */}
@@ -181,29 +203,60 @@ export function DashboardShell({ isEmployee, children }: Props) {
             </div>
           </div>
 
-          <nav aria-label="Dashboard sections" className="space-y-5">
-            {DASHBOARD_NAV_SECTIONS.map((section) => (
-              <div key={section.id}>
-                <h3 className="text-sm font-semibold text-foreground">
-                  {section.title}
-                </h3>
-                <p className="mt-1 text-xs leading-snug text-muted">
-                  {section.description}
-                </p>
-                <ul className="mt-2 space-y-1.5 border-l-2 border-accent/25 pl-3">
-                  {section.links.map((link) => (
-                    <li key={link.href + link.label}>
-                      <Link
-                        href={link.href}
-                        className={`text-sm ${navLinkClass(link.href)}`}
-                      >
-                        {link.label} →
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <nav aria-label="Dashboard sections" className="space-y-2">
+            {DASHBOARD_NAV_SECTIONS.map((section) => {
+              const expanded = openSection[section.id] ?? false;
+              const panelId = `${headingId}-acc-${section.id}`;
+              return (
+                <div
+                  key={section.id}
+                  className="rounded-lg border border-border/80 bg-background/40"
+                >
+                  <button
+                    type="button"
+                    id={`${panelId}-btn`}
+                    aria-expanded={expanded}
+                    aria-controls={panelId}
+                    onClick={() => toggleSection(section.id)}
+                    className="flex w-full items-start justify-between gap-2 px-3 py-2.5 text-left"
+                  >
+                    <span className="text-sm font-semibold text-foreground">
+                      {section.title}
+                    </span>
+                    <span
+                      className="shrink-0 text-muted"
+                      aria-hidden
+                    >
+                      {expanded ? "▾" : "▸"}
+                    </span>
+                  </button>
+                  {expanded ? (
+                    <div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={`${panelId}-btn`}
+                      className="border-t border-border/60 px-3 pb-3 pt-1"
+                    >
+                      <p className="text-xs leading-snug text-muted">
+                        {section.description}
+                      </p>
+                      <ul className="mt-2 space-y-1.5 border-l-2 border-accent/25 pl-3">
+                        {section.links.map((link) => (
+                          <li key={link.href + link.label}>
+                            <Link
+                              href={link.href}
+                              className={`text-sm ${navLinkClass(link.href)}`}
+                            >
+                              {link.label} →
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
           </nav>
 
           <div className="border-t border-border pt-4">

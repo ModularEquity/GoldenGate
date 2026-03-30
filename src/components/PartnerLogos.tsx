@@ -3,7 +3,7 @@ import Image from "next/image";
 const partners = [
   { name: "Vercel", href: "https://vercel.com", src: "/partners/vercel.svg", w: 90, h: 24 },
   { name: "GitHub", href: "https://github.com", src: "/partners/github.svg", w: 90, h: 24 },
-  { name: "Plaid", href: "https://plaid.com", src: "/partners/plaid.svg", w: 80, h: 24 },
+  { name: "Stripe", href: "https://stripe.com", src: "/partners/stripe.svg", w: 100, h: 32 },
   { name: "Mercury", href: "https://mercury.com", src: "/partners/mercury.svg", w: 120, h: 32 },
   {
     name: "QuickBooks",

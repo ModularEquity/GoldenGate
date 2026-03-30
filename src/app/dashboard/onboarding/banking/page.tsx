@@ -33,16 +33,20 @@ export default async function BankingOnboardingPage() {
 
       <OnboardingStepCard
         complete={complete}
-        title="Wire / ACH — routing, account, Plaid"
+        title="Wire / ACH — bank reference & instructions"
         description={
           <>
-            Mercury wires and ACH instructions are in onboarding materials. Link
-            a bank account on the{" "}
+            Mercury wires and ACH instructions are in onboarding materials. Add
+            a bank reference on the{" "}
             <Link href="/dashboard/fund" className="text-accent hover:underline">
               Fund
             </Link>{" "}
-            page (Plaid or manual last-4 reference), then confirm wire/ACH
-            instructions below.
+            page (manual last-4 or legacy Plaid link). We are not using Plaid for
+            KYC — Stripe + manual entry are the direction (see{" "}
+            <Link href="/dashboard/roadmap" className="text-accent hover:underline">
+              roadmap
+            </Link>
+            ). Then confirm wire/ACH instructions below.
           </>
         }
       >
@@ -55,7 +59,7 @@ export default async function BankingOnboardingPage() {
             }
           >
             {bankOk ? (
-              "✓ Bank account on file (Plaid or manual reference)."
+              "✓ Bank reference on file (manual or legacy link)."
             ) : (
               <>
                 Add a bank account on the{" "}

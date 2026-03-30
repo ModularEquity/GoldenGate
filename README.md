@@ -6,7 +6,7 @@ Private equity platform for **real estate renovations (fix-and-flip)** — inves
 
 - **Next.js** (App Router) + TypeScript + Tailwind CSS — deploy on **Vercel**
 - Repo on **GitHub**
-- Planned: **Plaid** (KYC / bank link), **Mercury** (banking ops)
+- **Stripe** (target for payments / bank connection), **Mercury** (banking ops); Plaid optional legacy only — see `/dashboard/roadmap`
 
 See **[AGENTS.md](./AGENTS.md)** for the full investor journey, conventions, and screen map.
 

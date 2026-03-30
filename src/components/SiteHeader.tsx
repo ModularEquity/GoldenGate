@@ -12,15 +12,9 @@ export async function SiteHeader() {
         <Link href="/" className="text-lg font-semibold tracking-tight text-accent">
           Modular Equity
         </Link>
-        <nav className="flex items-center gap-6 text-sm text-muted">
+        <nav className="flex flex-wrap items-center justify-end gap-x-6 gap-y-2 text-sm text-muted">
           <Link href="/" className="hover:text-foreground transition-colors">
             Home
-          </Link>
-          <Link
-            href="/contact"
-            className="hover:text-foreground transition-colors"
-          >
-            Contact
           </Link>
           {session?.user ? (
             <>
@@ -56,10 +50,22 @@ export async function SiteHeader() {
                   Team
                 </Link>
               ) : null}
+              <Link
+                href="/contact"
+                className="hover:text-foreground transition-colors"
+              >
+                Contact
+              </Link>
               <LogoutButton />
             </>
           ) : (
             <>
+              <Link
+                href="/contact"
+                className="hover:text-foreground transition-colors"
+              >
+                Contact
+              </Link>
               <Link
                 href="/login"
                 className="hover:text-foreground transition-colors"

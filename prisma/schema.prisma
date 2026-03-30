@@ -53,6 +53,7 @@ model User {
   referralCode    String?  @unique
   /** Referral code used at signup (?ref=), if any */
   referredByCode  String?
+  roadmapItemsCreated RoadmapItem[]
 }
 
 model Account {
@@ -169,6 +170,27 @@ enum DealStatus {
   OPEN
   CLOSING
   CLOSED
+}
+
+/** Product roadmap Kanban columns (logged-in /dashboard/roadmap) */
+enum RoadmapColumn {
+  BACKLOG
+  IN_PROGRESS
+  DONE
+}
+
+model RoadmapItem {
+  id          String        @id @default(cuid())
+  column      RoadmapColumn @default(BACKLOG)
+  title       String
+  description String?       @db.Text
+  sortOrder   Int           @default(0)
+  createdById String?
+  createdBy   User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime      @default(now())
+
+  @@index([column])
+  @@index([createdById])
 }
 
 model Deal {

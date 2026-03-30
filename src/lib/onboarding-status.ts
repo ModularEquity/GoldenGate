@@ -64,7 +64,7 @@ export function getOnboardingSteps(u: UserOnboardingFields): OnboardingStepStatu
     },
     {
       id: "banking",
-      label: "Wire / ACH — routing, account, Plaid",
+      label: "Wire / ACH — bank reference & instructions",
       href: "/dashboard/onboarding/banking",
       complete: bankOk && u.wireInstructionsAcknowledgedAt != null,
     },

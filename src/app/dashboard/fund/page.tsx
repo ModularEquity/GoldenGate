@@ -70,49 +70,40 @@ export default async function FundPage() {
           Bank accounts & funding
         </h1>
         <p className="mt-2 max-w-2xl text-muted">
-          Add a bank account for ACH reference: enter routing and account{" "}
-          <strong className="text-foreground">last 4 digits</strong> manually, or
-          connect with Plaid for verified linking. Then record a funding
-          commitment — live ACH requires Plaid Transfer / Stripe in production.
+          We are <strong className="text-foreground">not</strong> using Plaid for
+          KYC or bank verification. Add routing and account{" "}
+          <strong className="text-foreground">last 4 digits</strong> manually for
+          operations reference, or use{" "}
+          <strong className="text-foreground">Stripe</strong> (when configured) for
+          payments and Financial Connections. See{" "}
+          <Link href="/dashboard/roadmap" className="text-accent hover:underline">
+            Product roadmap
+          </Link>{" "}
+          for status.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="flex flex-col rounded-xl border border-border bg-card p-6">
           <h2 className="font-semibold text-foreground">
-            Add bank — Plaid (recommended)
+            Payments & bank link — Stripe (planned)
           </h2>
           <p className="mt-2 text-sm text-muted">
-            Connect a checking account for ownership verification and ACH prep.
-            Mercury remains our operating bank for wires per onboarding docs.
+            Target stack: <strong className="text-foreground">Stripe</strong> for
+            processing and, where available, bank account connection (Financial
+            Connections). This replaces Plaid for new investor flows. Wiring is
+            tracked on the roadmap.
           </p>
-          <div className="mt-4 flex-1">
-            {plaidReady ? (
-              <PlaidLinkButton />
-            ) : (
-              <p className="text-sm text-muted">
-                Plaid is not configured (set{" "}
-                <code className="rounded bg-background px-1">PLAID_CLIENT_ID</code>{" "}
-                and{" "}
-                <code className="rounded bg-background px-1">PLAID_API_SECRET</code>{" "}
-                or{" "}
-                <code className="rounded bg-background px-1">PLAID_SECRET</code>).
-              </p>
-            )}
-          </div>
-          {plaidAccounts.length > 0 ? (
-            <ul className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-              {plaidAccounts.map((a) => (
-                <li key={a.id} className="text-muted">
-                  <span className="text-foreground">
-                    {a.institutionName ?? "Linked account"}
-                  </span>
-                  {a.mask ? ` ·•••${a.mask}` : ""}
-                  {a.name ? ` · ${a.name}` : ""}
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <p className="mt-3 text-sm text-muted">
+            <Link href="/dashboard/roadmap" className="text-accent hover:underline">
+              Product roadmap →
+            </Link>
+          </p>
+          <p className="mt-4 rounded-lg border border-dashed border-border bg-muted/30 p-3 text-xs text-muted">
+            Env placeholders (when implemented):{" "}
+            <code className="rounded bg-background px-1">STRIPE_SECRET_KEY</code>,{" "}
+            <code className="rounded bg-background px-1">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code>
+          </p>
         </section>
 
         <section className="rounded-xl border border-border bg-card p-6">
@@ -133,6 +124,39 @@ export default async function FundPage() {
           </div>
         </section>
       </div>
+
+      <section className="rounded-xl border border-border/80 bg-card p-6">
+        <h2 className="font-semibold text-foreground">
+          Legacy: Plaid (optional)
+        </h2>
+        <p className="mt-2 text-sm text-muted">
+          Existing Plaid links remain visible for accounts that already connected.
+          New onboarding emphasizes manual reference and Stripe — we are not
+          relying on Plaid for KYC or bank verification going forward.
+        </p>
+        <div className="mt-4">
+          {plaidReady ? (
+            <PlaidLinkButton />
+          ) : (
+            <p className="text-sm text-muted">
+              Plaid is not configured (optional).
+            </p>
+          )}
+        </div>
+        {plaidAccounts.length > 0 ? (
+          <ul className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
+            {plaidAccounts.map((a) => (
+              <li key={a.id} className="text-muted">
+                <span className="text-foreground">
+                  {a.institutionName ?? "Linked account"}
+                </span>
+                {a.mask ? ` ·•••${a.mask}` : ""}
+                {a.name ? ` · ${a.name}` : ""}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
 
       <FundSection
         plaidAccounts={plaidAccounts}
