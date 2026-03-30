@@ -14,6 +14,14 @@ This repo’s **`.github/workflows/ci.yml`** runs on **[Depot-managed GitHub Act
 - `npm ci` → `npm run lint` → `npm run build` (same as local/Vercel compile).
 - Dummy `goldengate_*` Postgres URLs satisfy Prisma **generate** only; migrations are **not** applied in CI (Vercel handles `prisma migrate deploy` on deploy).
 
+## `DEPOT_TOKEN` (optional)
+
+If you use the **[Depot CLI](https://depot.dev/docs/cli/installation)** locally (e.g. `depot build`, `depot configure-docker`) or wire **Depot** into a custom workflow step, set an organization API token as **`DEPOT_TOKEN`** in your shell or in **`.env`** (never commit the real value).
+
+- Create or rotate tokens in the [Depot dashboard](https://depot.dev) → your org → **Settings** / **API** (see [Depot API authentication](https://depot.dev/docs/api/authentication)).
+- **GitHub Actions** jobs that only use `runs-on: depot-ubuntu-24.04` do **not** require `DEPOT_TOKEN` in the workflow unless you add explicit Depot CLI steps.
+- If a token is ever exposed (chat, logs, PR), **revoke and rotate** it in Depot immediately.
+
 ## Troubleshooting
 
 - **`Requested labels: depot-ubuntu-24.04` job stuck / no runners**: Depot app not installed, wrong org, or public-repo runner group not enabled.
