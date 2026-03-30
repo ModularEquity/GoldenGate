@@ -22,7 +22,7 @@ function routeReply(input: string): string {
     return "Use Login for email/password or Google. If you see redirect_uri_mismatch, open Help → Google sign-in from Register/Login and add the exact callback URL in Google Cloud.";
   }
   if (/contact|email|reach|human|speak|call/.test(q)) {
-    return `For direct help, use the Contact page (${getContactEmail()} is listed there).`;
+    return `For direct help, open Contact from the dashboard left ribbon (More) — ${getContactEmail()} is on that page.`;
   }
   if (/tax|w-9|w8|tin/.test(q)) {
     return "Complete tax intake under Dashboard → Onboarding → Tax; you can download a summary PDF.";

@@ -55,6 +55,7 @@ export const DASHBOARD_NAV_SECTIONS: DashboardNavSection[] = [
 ];
 
 export const DASHBOARD_UTILITY_LINKS: DashboardNavLink[] = [
+  { href: "/", label: "Marketing home" },
   { href: "/dashboard", label: "Hub home" },
   { href: "/dashboard/faq", label: "FAQ" },
   { href: "/dashboard/profile", label: "Profile" },

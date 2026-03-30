@@ -47,6 +47,18 @@ Then add **both** redirect URIs in Google Console if you use custom domain **and
 - `https://modularequity.com/api/auth/callback/google`
 - `https://<project>.vercel.app/api/auth/callback/google`
 
+## Recommended fix order (redirect_uri_mismatch)
+
+1. **Copy the exact URI from the error** — Google’s error details show `redirect_uri=...`; that string must appear **character-for-character** in Google Cloud → Credentials → OAuth client → **Authorized redirect URIs**.
+2. **Add both hosts if you use custom domain + Vercel URL**, e.g.  
+   `https://modularequity.com/api/auth/callback/google` **and**  
+   `https://<project>.vercel.app/api/auth/callback/google`.
+3. **Set Vercel Production env** to your public site (no trailing slash): `AUTH_URL=https://modularequity.com` (or `NEXT_PUBLIC_APP_URL` / `APP_URL`). **Redeploy** after changing.
+4. **JavaScript origins** must list the same hosts without paths: `https://modularequity.com`, etc.
+5. Wait **a few minutes** after saving in Google Cloud.
+
+See also: `/help/google-signin` on the site.
+
 ## Troubleshooting
 
 - **redirect_uri_mismatch** — The URI in the browser’s error must **exactly** match one entry in Google (including `https`, no trailing slash on the callback path unless you added one).

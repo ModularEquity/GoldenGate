@@ -1,8 +1,12 @@
-import Link from "next/link";
+import { auth } from "@/auth";
 import { HowItWorksTabs } from "@/components/HowItWorksTabs";
+import { HomeHeroActions } from "@/components/HomeHeroActions";
 import { PartnerLogos } from "@/components/PartnerLogos";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await auth();
+  const signedIn = Boolean(session?.user);
+
   return (
     <div className="space-y-12">
       <section className="space-y-6">
@@ -17,26 +21,7 @@ export default function HomePage() {
           projects—disciplined underwriting, transparent reporting, and a
           streamlined path from interest to subscription.
         </p>
-        <div className="flex flex-wrap gap-4">
-          <Link
-            href="/register"
-            className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
-          >
-            Register your email
-          </Link>
-          <Link
-            href="/login"
-            className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2.5 text-sm text-foreground hover:border-accent hover:text-accent"
-          >
-            Login
-          </Link>
-          <a
-            href="#how-it-works"
-            className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2.5 text-sm text-foreground hover:border-accent hover:text-accent"
-          >
-            How it works
-          </a>
-        </div>
+        <HomeHeroActions signedIn={signedIn} />
       </section>
 
       <section id="how-it-works" className="scroll-mt-24">

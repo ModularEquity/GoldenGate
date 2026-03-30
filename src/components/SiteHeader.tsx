@@ -3,9 +3,8 @@ import { auth } from "@/auth";
 import { LogoutButton } from "@/components/LogoutButton";
 
 /**
- * Top bar: brand + auth only. All app navigation lives in the dashboard
- * left ribbon (`DashboardShell`) when logged in — keeps the header unchanged
- * except Login → Logout.
+ * Top bar: brand + Dashboard (when signed in) + Login or Sign out.
+ * Deeper navigation stays in the dashboard left ribbon.
  */
 export async function SiteHeader() {
   const session = await auth();
@@ -18,7 +17,15 @@ export async function SiteHeader() {
         </Link>
         <div className="flex items-center gap-3 text-sm">
           {session?.user ? (
-            <LogoutButton />
+            <>
+              <Link
+                href="/dashboard"
+                className="text-foreground hover:text-accent transition-colors"
+              >
+                Dashboard
+              </Link>
+              <LogoutButton />
+            </>
           ) : (
             <Link
               href="/login"
