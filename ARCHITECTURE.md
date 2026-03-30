@@ -35,7 +35,7 @@
 ```
 src/app/           # Routes (App Router): pages + route handlers
   api/             # REST-style API routes (auth, plaid, deals, funding, etc.)
-  dashboard/       # Logged-in investor/employee UI
+  dashboard/       # Logged-in investor/employee UI (`layout.tsx` wraps pages in `DashboardShell` — left nav ribbon)
 src/components/    # React client/server components
 src/lib/           # Shared helpers (db, email, roles, deals, plaid, etc.)
 prisma/            # schema.prisma + migrations

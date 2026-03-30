@@ -49,7 +49,7 @@ Centralized in `src/lib/investor-resources.ts` — PPM, risk disclosures, operat
 1. **Home** — Value prop; CTAs to **Register** and **Login**.
 2. **Register** (`/register`) — Email → welcome magic link → **Set password** (`/set-password`).
 3. **Login** (`/login`) — Email + password → **Dashboard**. **Forgot password** (`/forgot-password`) → email → **Reset password** (`/reset-password`).
-4. **Dashboard** (`/dashboard`) — Investor hub; **FAQ** (`/dashboard/faq`) — logged-in accordion + TOC; **Technical catalogue** (`/dashboard/technical-catalogue`) — infra/vendor list with website, developer docs, and MCP doc links per tool (`src/lib/technical-catalogue.ts`).
+4. **Dashboard** (`/dashboard`) — Investor hub (header + onboarding checklist); **left ribbon** (`DashboardShell` + `src/lib/dashboard-nav.ts`) on all `/dashboard/*` routes — collapsible nav for onboarding, documents, deals, subscribe/fund, FAQ, profile, technical catalogue; **hide / auto-hide** (localStorage). **FAQ** (`/dashboard/faq`) — accordion + TOC. **Technical catalogue** (`/dashboard/technical-catalogue`) — infra/vendor links (`src/lib/technical-catalogue.ts`).
 5. **Sub-pages** — `/dashboard/onboarding` (PPM/risk Google Doc links, tax, banking copy), `/dashboard/documents` (operating PDF link, cap table stub), `/dashboard/deals` (Deal Room Drive link), `/dashboard/subscribe` (stub).
 6. **Fund** (`/dashboard/fund`) — Plaid Link, **wallets** (DB), **funding** intents (DB log; live ACH via Plaid Transfer / Stripe later).
 

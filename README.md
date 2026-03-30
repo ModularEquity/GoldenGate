@@ -34,6 +34,7 @@ npm run dev
 - **Login:** `/login` — email + password; **Forgot password** → reset link → `/reset-password`
 - Register: `/register` → magic link → **set password** → **dashboard** (`/dashboard` hub + investor sections)
 - **Technical catalogue** (logged-in): `/dashboard/technical-catalogue` — vendor stack with **website**, **developer docs**, and **MCP docs** links (`src/lib/technical-catalogue.ts`)
+- **Dashboard navigation:** all `/dashboard/*` pages use a **left ribbon** (`DashboardShell`, `src/lib/dashboard-nav.ts`) with **Hide** and **Auto-hide** (persists in `localStorage`). Hub home (`/dashboard`) focuses on the investor checklist; section links moved off the main column into the ribbon.
 
 ```bash
 npm run build

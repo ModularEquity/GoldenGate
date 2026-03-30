@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <Providers>
           <SiteHeader />
-          <main className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
+          <main className="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6">
             {children}
           </main>
         </Providers>

@@ -15,42 +15,6 @@ export const metadata = {
   description: "Your investor dashboard.",
 };
 
-const sections = [
-  {
-    title: "1 · Onboarding & compliance",
-    description:
-      "Register your investor account, questionnaire, PPM, risk disclosures, tax forms, and wire/ACH instructions (DocSign).",
-    links: [
-      { href: "/dashboard/onboarding", label: "Investor onboarding overview" },
-      { href: "/dashboard/onboarding/register", label: "Register investor account" },
-      { href: "/dashboard/onboarding/ppm-risk", label: "PPM & risk disclosures" },
-      { href: "/dashboard/onboarding/tax", label: "W-9 / W-8 tax forms" },
-      { href: "/dashboard/onboarding/banking", label: "Wire / ACH & banking" },
-    ],
-  },
-  {
-    title: "2 · Documents (read-only)",
-    description: "Operating agreement and cap table visibility.",
-    links: [
-      { href: "/dashboard/documents", label: "Operating documents" },
-      { href: "/dashboard/documents#cap-table", label: "Cap table" },
-    ],
-  },
-  {
-    title: "3 · Deals",
-    description: "Review fix-and-flip and renovation opportunities.",
-    links: [{ href: "/dashboard/deals", label: "Deal room & review" }],
-  },
-  {
-    title: "4 · Subscribe & fund",
-    description: "Execute subscription documents and fund via ACH.",
-    links: [
-      { href: "/dashboard/subscribe", label: "Subscribe to a deal" },
-      { href: "/dashboard/fund", label: "Bank accounts & funding" },
-    ],
-  },
-];
-
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) {
@@ -116,11 +80,6 @@ export default async function DashboardPage() {
             ✓ All onboarding checklist items complete
           </p>
         ) : null}
-        <p className="mt-3 max-w-2xl text-sm text-muted">
-          Follow the steps below to complete onboarding, review documents and
-          deals, then subscribe and fund. Integrations (DocSign, Plaid, Mercury)
-          will connect here as we wire production flows.
-        </p>
       </div>
 
       {!isEmployee ? (
@@ -130,62 +89,16 @@ export default async function DashboardPage() {
           bankLinked={dbUser ? hasBankLinked(dbUser) : false}
           outstandingOnboarding={outstandingOnboarding}
         />
-      ) : null}
-
-      <div className="grid gap-6 sm:grid-cols-2">
-        {sections.map((section) => (
-          <section
-            key={section.title}
-            className="flex flex-col rounded-xl border border-border bg-card p-6"
-          >
-            <h2 className="font-semibold text-foreground">{section.title}</h2>
-            <p className="mt-2 flex-1 text-sm text-muted">{section.description}</p>
-            <ul className="mt-4 space-y-2">
-              {section.links.map((link) => (
-                <li key={link.href + link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-accent hover:underline"
-                  >
-                    {link.label} →
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-
-      {isEmployee ? (
+      ) : (
         <section className="rounded-xl border border-accent/40 bg-card p-6">
-          <h2 className="font-medium text-foreground">Employee</h2>
+          <h2 className="font-medium text-foreground">Employee hub</h2>
           <p className="mt-2 text-sm text-muted">
-            <Link href="/dashboard/team" className="text-accent hover:underline">
-              Open team & operations →
-            </Link>
+            Use the{" "}
+            <strong className="text-foreground">Navigate</strong> ribbon for
+            onboarding links, deals, FAQ, and team tools.
           </p>
         </section>
-      ) : null}
-
-      <section className="rounded-xl border border-dashed border-border bg-card/80 p-6">
-        <h2 className="font-medium text-foreground">Quick reference</h2>
-        <p className="mt-2 text-sm text-muted">
-          <Link href="/dashboard/faq" className="text-accent hover:underline">
-            Investor FAQ
-          </Link>
-          {" · "}
-          <Link
-            href="/dashboard/technical-catalogue"
-            className="text-accent hover:underline"
-          >
-            Technical catalogue
-          </Link>
-          {" · "}
-          See <code className="rounded bg-background px-1 py-0.5 text-xs">AGENTS.md</code>{" "}
-          in the repo for the full journey. Need help? Contact your sponsor at
-          Modular Equity.
-        </p>
-      </section>
+      )}
     </div>
   );
 }
