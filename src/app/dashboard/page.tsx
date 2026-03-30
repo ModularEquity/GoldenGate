@@ -174,6 +174,13 @@ export default async function DashboardPage() {
             Investor FAQ
           </Link>
           {" · "}
+          <Link
+            href="/dashboard/technical-catalogue"
+            className="text-accent hover:underline"
+          >
+            Technical catalogue
+          </Link>
+          {" · "}
           See <code className="rounded bg-background px-1 py-0.5 text-xs">AGENTS.md</code>{" "}
           in the repo for the full journey. Need help? Contact your sponsor at
           Modular Equity.

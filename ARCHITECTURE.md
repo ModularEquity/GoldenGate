@@ -14,6 +14,7 @@
 | Email / magic links | `src/lib/email.ts`, `docs/resend-and-production.md` | `src/app/api/register-email`, `src/lib/magic-link.ts` |
 | Referrals / share links | `ARCHITECTURE.md` §Referrals | `src/app/dashboard/profile/page.tsx`, `src/app/api/claim-referral` |
 | Product / journey (narrative) | `AGENTS.md` | `docs/flow.md` |
+| Internal tech stack links (members) | `src/lib/technical-catalogue.ts` | `/dashboard/technical-catalogue` |
 
 **Authoritative narrative (product + conventions):** [`AGENTS.md`](./AGENTS.md)
 

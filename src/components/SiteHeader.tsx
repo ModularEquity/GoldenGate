@@ -45,6 +45,12 @@ export async function SiteHeader() {
                 FAQ
               </Link>
               <Link
+                href="/dashboard/technical-catalogue"
+                className="hidden md:inline hover:text-foreground transition-colors"
+              >
+                Tech catalogue
+              </Link>
+              <Link
                 href="/dashboard/profile"
                 className="hover:text-foreground transition-colors"
               >
