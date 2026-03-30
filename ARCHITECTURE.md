@@ -39,6 +39,7 @@ src/app/           # Routes (App Router): pages + route handlers
 src/components/    # React client/server components
 src/lib/           # Shared helpers (db, email, roles, deals, plaid, etc.)
 prisma/            # schema.prisma + migrations
+.github/workflows/ # CI (Depot runners — see docs/ci-depot.md)
 docs/              # Deep-dive docs (DB, Resend, Google OAuth, Plaid)
 middleware.ts      # Edge: JWT check for /dashboard (no Prisma)
 ```

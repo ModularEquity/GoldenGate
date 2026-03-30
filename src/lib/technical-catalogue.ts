@@ -94,9 +94,17 @@ export const TECHNICAL_CATALOGUE: TechCatalogueItem[] = [
   {
     name: "GitHub",
     category: "Source control & CI",
-    description: "Repository hosting and Vercel/Git integration.",
+    description: "Repository hosting, PRs, and CI workflows.",
     websiteUrl: "https://github.com",
     docsUrl: "https://docs.github.com",
+    mcpUrl: null,
+  },
+  {
+    name: "Depot",
+    category: "Source control & CI",
+    description: "Faster GitHub Actions runners + cache for CI builds (see docs/ci-depot.md).",
+    websiteUrl: "https://depot.dev",
+    docsUrl: "https://depot.dev/docs/github-actions/quickstart",
     mcpUrl: null,
   },
   {

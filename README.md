@@ -12,6 +12,8 @@ See **[AGENTS.md](./AGENTS.md)** for the full investor journey, conventions, and
 
 **Architecture & AI context routing:** **[ARCHITECTURE.md](./ARCHITECTURE.md)** — system map, which docs to load per task, referrals, integrations.
 
+**CI:** GitHub Actions on **[Depot runners](https://depot.dev/docs/github-actions/quickstart)** — see **[docs/ci-depot.md](./docs/ci-depot.md)** for connecting the Depot app to this repo.
+
 ## Flow diagram
 
 Versioned Mermaid diagram: [docs/flow.md](./docs/flow.md). Use **Figma** or **Lucidchart** for high-fidelity UI mockups of the same flow.

@@ -1,0 +1,44 @@
+# Runs on Depot-managed GitHub Actions runners for faster compute + Depot Cache
+# (actions/cache, setup-node cache, etc.). Connect the repo in the Depot dashboard first:
+# https://depot.dev/docs/github-actions/quickstart
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-build:
+    name: Lint & build
+    runs-on: depot-ubuntu-24.04
+    env:
+      # Prisma validate/generate only — not a real DB (see prisma/schema.prisma env names)
+      goldengate_DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci?schema=public
+      goldengate_POSTGRES_URL_NON_POOLING: postgresql://ci:ci@127.0.0.1:5432/ci?schema=public
+      # Next.js build — no secrets required for compile
+      AUTH_SECRET: ci-build-placeholder-secret-at-least-32-chars-long
+      NEXTAUTH_SECRET: ci-build-placeholder-secret-at-least-32-chars-long
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
