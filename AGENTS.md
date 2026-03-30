@@ -14,7 +14,7 @@ Guidance for AI coding agents and contributors working on this repository.
 |--------|------|------|
 | Front-end & hosting | **Vercel** | Deploy Next.js app |
 | Source control | **GitHub** | Repository |
-| Bank linking / payments | **Plaid** (and optionally **Stripe** per product notes) | KYC, connect account, ACH |
+| Bank linking / payments | **Stripe** (target) + manual bank reference; Plaid legacy optional — **no standalone KYC vendor** for now | See `/dashboard/roadmap` |
 | Business banking | **Mercury** | Operating bank (wire/ACH instructions, reconciliation — integrate via ops/API as applicable) |
 
 Agents should prefer environment variables for all secrets (`PLAID_*`, `STRIPE_*`, etc.) and never commit credentials.
@@ -51,7 +51,7 @@ Centralized in `src/lib/investor-resources.ts` — PPM, risk disclosures, operat
 3. **Login** (`/login`) — Email + password → **Dashboard**. **Forgot password** (`/forgot-password`) → email → **Reset password** (`/reset-password`).
 4. **Dashboard** (`/dashboard`) — Investor hub (header + onboarding checklist); **left ribbon** (`DashboardShell` + `src/lib/dashboard-nav.ts`) on all `/dashboard/*` routes — collapsible nav for onboarding, documents, deals, subscribe/fund, FAQ, profile, technical catalogue; **hide / auto-hide** (localStorage). **FAQ** (`/dashboard/faq`) — accordion + TOC. **Technical catalogue** (`/dashboard/technical-catalogue`) — infra/vendor links (`src/lib/technical-catalogue.ts`).
 5. **Sub-pages** — `/dashboard/onboarding` (PPM/risk Google Doc links, tax, banking copy), `/dashboard/documents` (operating PDF link, cap table stub), `/dashboard/deals` (Deal Room Drive link), `/dashboard/subscribe` (stub).
-6. **Fund** (`/dashboard/fund`) — Plaid Link, **wallets** (DB), **funding** intents (DB log; live ACH via Plaid Transfer / Stripe later).
+6. **Fund** (`/dashboard/fund`) — manual bank (last-4), optional legacy Plaid, **Stripe** section (planned); **funding** intents (DB). **Product roadmap** (`/dashboard/roadmap`) Kanban + user-submitted requests.
 
 Additional routes mirror the investor journey table as features are built.
 
@@ -84,6 +84,6 @@ Open `http://localhost:3000`. Build: `npm run build`.
 - **Magic link** with purpose: `SET_PASSWORD` (welcome) vs `RESET_PASSWORD` (forgot flow); 24h TTL; **bcrypt** for passwords.
 - **Email**: `RESEND_API_KEY`; default `From` is `Modular Equity <noreply@modularequity.com>`. See `docs/resend-and-production.md`.
 
-**Onboarding tracking:** `User` fields `investorProfileCompletedAt`, `ppmRiskCompletedAt`, `taxCompletedAt`, `wireInstructionsAcknowledgedAt`; sub-routes under `/dashboard/onboarding/*`; dashboard shows **outstanding count**; incomplete steps use **red borders** on the onboarding overview. **Manual bank** (`ManualBankAccount`, last-4 routing/account) on Fund page alongside Plaid. **Tax intake:** `taxProfileJson` + PDF download via `pdf-lib` (`/api/tax-profile`, `/api/tax-profile/pdf`). **Deals:** Prisma `Deal` model (`maxSubscriptionPctOfTotalCost`, default 20) — list at `/dashboard/deals`, detail `/dashboard/deals/[slug]`. **Employees** add deals at `/dashboard/team/deals/new` (`POST /api/deals`); OG image from `propertyUrl` → `thumbnailUrl` (`src/lib/og-image.ts`). Seed migration includes Umberland (`2915-umberland-dr-atlanta`). **Subscribe:** `/dashboard/subscribe` + `/dashboard/subscribe/[slug]`; `DealSubscription` + `POST /api/deals/[slug]/subscribe`; min **$5k**, max **pct × totalCost** (`src/lib/subscription-rules.ts`). **OAuth:** set `AUTH_URL` or `APP_URL` to `https://modularequity.com` on custom domain to avoid `redirect_uri_mismatch`.
+**Onboarding tracking:** `User` fields `investorProfileCompletedAt`, `ppmRiskCompletedAt`, `taxCompletedAt`, `wireInstructionsAcknowledgedAt`; sub-routes under `/dashboard/onboarding/*`; dashboard shows **outstanding count**; incomplete steps use **red borders** on the onboarding overview. **Manual bank** (`ManualBankAccount`, last-4 routing/account) on Fund page; Plaid optional legacy (not for KYC). **Tax intake:** `taxProfileJson` + PDF download via `pdf-lib` (`/api/tax-profile`, `/api/tax-profile/pdf`). **Deals:** Prisma `Deal` model (`maxSubscriptionPctOfTotalCost`, default 20) — list at `/dashboard/deals`, detail `/dashboard/deals/[slug]`. **Employees** add deals at `/dashboard/team/deals/new` (`POST /api/deals`); OG image from `propertyUrl` → `thumbnailUrl` (`src/lib/og-image.ts`). Seed migration includes Umberland (`2915-umberland-dr-atlanta`). **Subscribe:** `/dashboard/subscribe` + `/dashboard/subscribe/[slug]`; `DealSubscription` + `POST /api/deals/[slug]/subscribe`; min **$5k**, max **pct × totalCost** (`src/lib/subscription-rules.ts`). **OAuth:** set `AUTH_URL` or `APP_URL` to `https://modularequity.com` on custom domain to avoid `redirect_uri_mismatch`.
 
 Still incremental: Plaid/Mercury/DocSign, Postgres migration for production.
