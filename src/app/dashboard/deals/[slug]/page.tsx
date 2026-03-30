@@ -7,7 +7,9 @@ import { toDealDetail } from "@/lib/deals";
 import { RefreshDealThumbnail } from "@/components/RefreshDealThumbnail";
 import { fetchOgImageUrl } from "@/lib/og-image";
 import { computeDealReturnMetrics, formatPct } from "@/lib/deal-metrics";
+import { computeEquityCapacity } from "@/lib/deal-equity-capacity";
 import { DealInvestmentCalculator } from "@/components/DealInvestmentCalculator";
+import { EquityCapacityBar } from "@/components/EquityCapacityBar";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -48,6 +50,19 @@ export default async function DealDetailPage({ params }: Props) {
   }
 
   const deal = toDealDetail({ ...row, thumbnailUrl });
+
+  const subsAgg = await prisma.dealSubscription.aggregate({
+    where: { dealId: row.id },
+    _sum: { amountCents: true },
+  });
+  const lpSubscribedUsd = (subsAgg._sum.amountCents ?? 0) / 100;
+  const equityBreakdown = computeEquityCapacity(
+    deal.totalCostUsd,
+    deal.ltvPct,
+    deal.gpContributionUsd,
+    lpSubscribedUsd,
+  );
+
   const returns = computeDealReturnMetrics(
     deal.profitUsd,
     deal.totalCostUsd,
@@ -160,6 +175,10 @@ export default async function DealDetailPage({ params }: Props) {
             label="LTV vs total cost"
             value={`${deal.ltvPct}% / ${100 - deal.ltvPct}% equity`}
           />
+          <Fin
+            label="GP participation (committed)"
+            value={fmtUsd(deal.gpContributionUsd)}
+          />
           <Fin label="Reno budget" value={fmtUsd(deal.renoBudgetUsd)} />
           <Fin label="Transaction fees" value={fmtUsd(deal.transactionFeesUsd)} />
           <Fin label="Total cost" value={fmtUsd(deal.totalCostUsd)} />
@@ -199,6 +218,8 @@ export default async function DealDetailPage({ params }: Props) {
           <Fin label="Target sale date" value={fmtDate(deal.saleTargetDate)} />
         </dl>
       </section>
+
+      <EquityCapacityBar dealName={deal.name} breakdown={equityBreakdown} />
 
       <section className="rounded-xl border border-border bg-card p-6">
         <h2 className="text-lg font-semibold text-foreground">Documents</h2>

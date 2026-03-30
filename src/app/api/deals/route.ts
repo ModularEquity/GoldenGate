@@ -151,6 +151,12 @@ export async function POST(request: Request) {
     return Number.isNaN(d.getTime()) ? null : d;
   };
 
+  let gpContributionUsd = 0;
+  if (body.gpContributionUsd !== undefined) {
+    const g = num("gpContributionUsd");
+    if (g != null && g >= 0) gpContributionUsd = g;
+  }
+
   const deal = await prisma.deal.create({
     data: {
       slug,
@@ -178,6 +184,7 @@ export async function POST(request: Request) {
       renovationCompleteDate: parseOptDate("renovationCompleteDate"),
       listingDate: parseOptDate("listingDate"),
       saleTargetDate: parseOptDate("saleTargetDate"),
+      gpContributionUsd,
     },
   });
 

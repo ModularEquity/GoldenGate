@@ -202,6 +202,8 @@ model Deal {
   saleTargetDate      DateTime?  @db.Date
   /** Max subscription as % of total cost (e.g. 20 = 20% of total cost) */
   maxSubscriptionPctOfTotalCost Int @default(20)
+  /** GP / sponsor equity participation (dollars) — shown on deal for clarity */
+  gpContributionUsd   Int        @default(0)
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
 

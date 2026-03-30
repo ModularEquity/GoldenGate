@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { LogoutButton } from "@/components/LogoutButton";
+import { getContactEmail } from "@/lib/site-contact";
 
 export async function SiteHeader() {
   const session = await auth();
   const isEmployee = session?.user?.role === "EMPLOYEE";
+  const contactEmail = getContactEmail();
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur">
@@ -16,6 +18,18 @@ export async function SiteHeader() {
           <Link href="/" className="hover:text-foreground transition-colors">
             Home
           </Link>
+          <Link
+            href="/contact"
+            className="hover:text-foreground transition-colors"
+          >
+            Contact
+          </Link>
+          <a
+            href={`mailto:${contactEmail}`}
+            className="hidden sm:inline hover:text-foreground transition-colors"
+          >
+            {contactEmail}
+          </a>
           {session?.user ? (
             <>
               <Link

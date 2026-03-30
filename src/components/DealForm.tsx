@@ -28,6 +28,7 @@ const empty = {
   renovationCompleteDate: "",
   listingDate: "",
   saleTargetDate: "",
+  gpContributionUsd: "",
 };
 
 export function DealForm() {
@@ -75,6 +76,9 @@ export function DealForm() {
           renovationCompleteDate: f.renovationCompleteDate || undefined,
           listingDate: f.listingDate || undefined,
           saleTargetDate: f.saleTargetDate || undefined,
+          gpContributionUsd: f.gpContributionUsd
+            ? Number(f.gpContributionUsd.replace(/[^0-9.-]/g, ""))
+            : undefined,
         }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string; deal?: { slug: string } };
@@ -229,6 +233,19 @@ export function DealForm() {
           />
           <p className="text-xs text-muted">
             Debt as % of total project cost; equity = remainder (levered ROE).
+          </p>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">GP participation ($)</label>
+          <input
+            value={f.gpContributionUsd}
+            onChange={(e) => set("gpContributionUsd", e.target.value)}
+            inputMode="decimal"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            placeholder="25000"
+          />
+          <p className="text-xs text-muted">
+            General partner equity committed (shown on the deal page & capacity bar).
           </p>
         </div>
         <div className="space-y-2">

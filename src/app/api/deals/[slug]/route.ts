@@ -123,6 +123,12 @@ export async function PATCH(request: Request, ctx: Ctx) {
   const listingDate = parseDate("listingDate");
   const saleTargetDate = parseDate("saleTargetDate");
 
+  let gpContributionUsd = deal.gpContributionUsd;
+  if (body.gpContributionUsd !== undefined) {
+    const g = numOpt("gpContributionUsd");
+    if (g !== undefined && g >= 0) gpContributionUsd = g;
+  }
+
   const updated = await prisma.deal.update({
     where: { id: deal.id },
     data: {
@@ -166,6 +172,7 @@ export async function PATCH(request: Request, ctx: Ctx) {
         : {}),
       ...(listingDate !== undefined ? { listingDate } : {}),
       ...(saleTargetDate !== undefined ? { saleTargetDate } : {}),
+      gpContributionUsd,
     },
   });
 
