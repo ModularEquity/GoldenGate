@@ -5,16 +5,18 @@ import { prisma } from "@/lib/db";
 import { fetchOgImageUrl } from "@/lib/og-image";
 import { slugifyName, toDealListItem } from "@/lib/deals";
 import type { DealStatus } from "@prisma/client";
+import { canManageDeals } from "@/lib/deal-roles";
+import { logDealChanges } from "@/lib/deal-audit";
 
-function requireEmployee(session: Session | null) {
-  return session?.user?.role === "EMPLOYEE";
+function requireDealManager(session: Session | null) {
+  return session?.user && canManageDeals(session.user.role);
 }
 
 type Ctx = { params: Promise<{ slug: string }> };
 
 export async function PATCH(request: Request, ctx: Ctx) {
   const session = await auth();
-  if (!requireEmployee(session)) {
+  if (!requireDealManager(session)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -23,6 +25,7 @@ export async function PATCH(request: Request, ctx: Ctx) {
   if (!deal) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  const before = { ...deal };
 
   let body: Record<string, unknown>;
   try {
@@ -174,6 +177,13 @@ export async function PATCH(request: Request, ctx: Ctx) {
       ...(saleTargetDate !== undefined ? { saleTargetDate } : {}),
       gpContributionUsd,
     },
+  });
+
+  await logDealChanges({
+    dealId: deal.id,
+    actorId: session!.user.id,
+    before,
+    after: updated,
   });
 
   return NextResponse.json({ ok: true, deal: toDealListItem(updated) });

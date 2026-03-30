@@ -10,6 +10,10 @@ import { computeDealReturnMetrics, formatPct } from "@/lib/deal-metrics";
 import { computeEquityCapacity } from "@/lib/deal-equity-capacity";
 import { DealInvestmentCalculator } from "@/components/DealInvestmentCalculator";
 import { EquityCapacityBar } from "@/components/EquityCapacityBar";
+import { canManageDeals } from "@/lib/deal-roles";
+import { DealEditForm } from "@/components/DealEditForm";
+import { DealAuditSection } from "@/components/DealAuditSection";
+import { DealCommentsSection } from "@/components/DealCommentsSection";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -85,6 +89,11 @@ export default async function DealDetailPage({ params }: Props) {
         ? "Closing"
         : "Closed";
 
+  const canEdit = canManageDeals(session.user.role);
+  const showSubscribe = deal.status === "OPEN" && session.user.role === "INVESTOR";
+  const canRefreshThumb =
+    session.user.role === "EMPLOYEE" || session.user.role === "DEAL_SOURCER";
+
   return (
     <div className="space-y-10">
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
@@ -129,7 +138,7 @@ export default async function DealDetailPage({ params }: Props) {
         >
           View on Redfin ↗
         </a>
-        {row.status === "OPEN" && session.user.role !== "EMPLOYEE" ? (
+        {showSubscribe ? (
           <Link
             href={`/dashboard/subscribe/${deal.slug}`}
             className="inline-flex w-fit items-center rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
@@ -137,10 +146,25 @@ export default async function DealDetailPage({ params }: Props) {
             Subscribe to this deal →
           </Link>
         ) : null}
-        {session.user.role === "EMPLOYEE" ? (
+        {canRefreshThumb ? (
           <RefreshDealThumbnail slug={deal.slug} />
         ) : null}
       </div>
+
+      {canEdit ? (
+        <section className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-6">
+          <h2 className="text-lg font-semibold text-foreground">
+            Edit deal (Deal Sourcer / operations)
+          </h2>
+          <p className="mt-2 text-sm text-muted">
+            Changes are saved to the database and recorded in the change history below
+            with your user and timestamp.
+          </p>
+          <div className="mt-4">
+            <DealEditForm deal={deal} />
+          </div>
+        </section>
+      ) : null}
 
       {deal.highlights.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-6">
@@ -240,6 +264,10 @@ export default async function DealDetailPage({ params }: Props) {
         profitUsd={deal.profitUsd}
         ltvPct={deal.ltvPct}
       />
+
+      <DealAuditSection dealSlug={deal.slug} />
+
+      <DealCommentsSection dealSlug={deal.slug} />
 
       <section className="rounded-xl border border-dashed border-border bg-card/80 p-6">
         <h2 className="font-medium text-foreground">Next steps</h2>

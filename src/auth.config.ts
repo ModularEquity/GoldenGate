@@ -33,7 +33,8 @@ export const authConfig = {
         token.name = user.name;
         token.picture = user.image;
         token.role =
-          (user as { role?: "INVESTOR" | "EMPLOYEE" }).role ?? "INVESTOR";
+          (user as { role?: "INVESTOR" | "EMPLOYEE" | "DEAL_SOURCER" }).role ??
+          "INVESTOR";
       }
       if (trigger === "update" && session?.name) {
         token.name = session.name;
@@ -53,7 +54,8 @@ export const authConfig = {
         session.user.name = token.name as string | null | undefined;
         session.user.image = token.picture as string | null | undefined;
         session.user.role =
-          (token.role as "INVESTOR" | "EMPLOYEE") ?? "INVESTOR";
+          (token.role as "INVESTOR" | "EMPLOYEE" | "DEAL_SOURCER") ??
+          "INVESTOR";
       }
       return session;
     },

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   DASHBOARD_NAV_SECTIONS,
   DASHBOARD_UTILITY_LINKS,
+  DEAL_SOURCER_NAV_LINKS,
   EMPLOYEE_NAV_LINKS,
 } from "@/lib/dashboard-nav";
 
@@ -13,11 +14,11 @@ const STORAGE_OPEN = "me-dashboard-sidebar-open";
 const STORAGE_AUTO = "me-dashboard-sidebar-auto-hide";
 
 type Props = {
-  isEmployee: boolean;
+  shellRole: "investor" | "employee" | "deal_sourcer";
   children: React.ReactNode;
 };
 
-export function DashboardShell({ isEmployee, children }: Props) {
+export function DashboardShell({ shellRole, children }: Props) {
   const pathname = usePathname();
   const autoHideLeaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -274,8 +275,20 @@ export function DashboardShell({ isEmployee, children }: Props) {
                   </Link>
                 </li>
               ))}
-              {isEmployee
+              {shellRole === "employee"
                 ? EMPLOYEE_NAV_LINKS.map((link) => (
+                    <li key={link.href + link.label}>
+                      <Link
+                        href={link.href}
+                        className={`text-sm ${navLinkClass(link.href)}`}
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))
+                : null}
+              {shellRole === "deal_sourcer"
+                ? DEAL_SOURCER_NAV_LINKS.map((link) => (
                     <li key={link.href + link.label}>
                       <Link
                         href={link.href}

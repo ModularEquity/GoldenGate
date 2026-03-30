@@ -125,21 +125,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.id) {
-        const role = roleFromEmail(user.email);
-        await prisma.user.update({
+        const existing = await prisma.user.findUnique({
           where: { id: user.id },
-          data: { role },
+          select: { role: true },
         });
+        if (existing?.role === "INVESTOR") {
+          const role = roleFromEmail(user.email);
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { role },
+          });
+        }
       }
     },
     async linkAccount({ user }) {
       const u = await prisma.user.findUnique({ where: { id: user.id } });
       if (!u) return;
-      const role = roleFromEmail(u.email);
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { role },
-      });
+      if (u.role === "INVESTOR") {
+        const role = roleFromEmail(u.email);
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { role },
+        });
+      }
     },
   },
 });

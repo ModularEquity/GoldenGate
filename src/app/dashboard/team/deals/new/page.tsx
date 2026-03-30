@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { canManageDeals } from "@/lib/deal-roles";
 import { DealForm } from "@/components/DealForm";
 
 export const metadata = { title: "New deal — Modular Equity" };
@@ -8,7 +9,7 @@ export const metadata = { title: "New deal — Modular Equity" };
 export default async function NewDealPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role !== "EMPLOYEE") {
+  if (!canManageDeals(session.user.role)) {
     redirect("/dashboard");
   }
 

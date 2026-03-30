@@ -6,6 +6,7 @@ import { INVESTOR_GOOGLE_DOCS } from "@/lib/investor-resources";
 import { toDealListItem } from "@/lib/deals";
 import { DealCard } from "@/components/DealCard";
 import { fetchOgImageUrl } from "@/lib/og-image";
+import { canManageDeals } from "@/lib/deal-roles";
 
 export const metadata = {
   title: "Deals — Modular Equity",
@@ -60,13 +61,19 @@ export default async function DealsPage() {
           </a>
           .
         </p>
-        {session.user.role === "EMPLOYEE" ? (
-          <p className="mt-3">
+        {canManageDeals(session.user.role) ? (
+          <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
             <Link
               href="/dashboard/team/deals/new"
               className="text-sm font-medium text-accent hover:underline"
             >
-              Add a new deal (team) →
+              Add a new deal →
+            </Link>
+            <Link
+              href="/dashboard/team/deals/import"
+              className="text-sm font-medium text-accent hover:underline"
+            >
+              Import CSV →
             </Link>
           </p>
         ) : null}
@@ -80,7 +87,8 @@ export default async function DealsPage() {
 
       {deals.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted">
-          No deals yet. Employees can add deals from Team → Add deal.
+          No deals yet. Deal sourcers and operations can add deals from Sourcing /
+          Team.
         </p>
       ) : null}
     </div>

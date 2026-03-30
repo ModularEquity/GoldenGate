@@ -12,7 +12,13 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const isEmployee = session.user.role === "EMPLOYEE";
+  const role = session.user.role;
+  const shellRole =
+    role === "EMPLOYEE"
+      ? "employee"
+      : role === "DEAL_SOURCER"
+        ? "deal_sourcer"
+        : "investor";
 
-  return <DashboardShell isEmployee={isEmployee}>{children}</DashboardShell>;
+  return <DashboardShell shellRole={shellRole}>{children}</DashboardShell>;
 }

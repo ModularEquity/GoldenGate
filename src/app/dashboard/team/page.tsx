@@ -1,16 +1,21 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { canAccessTeamHub, canManageDeals } from "@/lib/deal-roles";
 
 export const metadata = {
   title: "Team — Modular Equity",
 };
 
-/** Employee-only area — extend with admin tools, approvals, etc. */
 export default async function TeamPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role !== "EMPLOYEE") {
+
+  const role = session.user.role;
+  const isEmployee = role === "EMPLOYEE";
+  const isDealSourcer = role === "DEAL_SOURCER";
+
+  if (!canAccessTeamHub(session.user.role) && !isDealSourcer) {
     redirect("/dashboard");
   }
 
@@ -21,26 +26,52 @@ export default async function TeamPage() {
           ← Investor hub
         </Link>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight">
-          Team & operations
+          {isDealSourcer && !isEmployee
+            ? "Deal sourcing hub"
+            : "Team & operations"}
         </h1>
         <p className="mt-2 text-muted">
-          Employee-only area. Wire investor support, compliance review, and
-          internal workflows here as we build them.
+          {isDealSourcer && !isEmployee
+            ? "Source renovation and new-build opportunities, upload deal stats (CSV or web form), and edit deals with full audit history."
+            : "Employee area — operations, compliance, and internal workflows."}
         </p>
       </div>
       <div className="rounded-xl border border-accent/40 bg-card p-6">
         <p className="text-sm text-muted">
-          You are signed in as <strong>{session.user.email}</strong> with{" "}
-          <strong>Employee</strong> permissions.
+          Signed in as <strong>{session.user.email}</strong> —{" "}
+          <strong>
+            {isEmployee ? "Employee" : isDealSourcer ? "Deal Sourcer" : role}
+          </strong>
+          .
         </p>
-        <div className="mt-4">
-          <Link
-            href="/dashboard/team/deals/new"
-            className="font-medium text-accent hover:underline"
-          >
-            Add a new deal →
-          </Link>
-        </div>
+        {canManageDeals(role) ? (
+          <ul className="mt-4 space-y-2 text-sm">
+            <li>
+              <Link
+                href="/dashboard/team/deals/new"
+                className="font-medium text-accent hover:underline"
+              >
+                Add a new deal →
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/dashboard/team/deals/import"
+                className="font-medium text-accent hover:underline"
+              >
+                Import deals (CSV) →
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/dashboard/deals"
+                className="text-accent hover:underline"
+              >
+                Deal room (review & edit any deal) →
+              </Link>
+            </li>
+          </ul>
+        ) : null}
       </div>
     </div>
   );

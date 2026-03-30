@@ -4,7 +4,8 @@ import { LogoutButton } from "@/components/LogoutButton";
 
 export async function SiteHeader() {
   const session = await auth();
-  const isEmployee = session?.user?.role === "EMPLOYEE";
+  const role = session?.user?.role;
+  const showTeamLink = role === "EMPLOYEE" || role === "DEAL_SOURCER";
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur">
@@ -42,12 +43,12 @@ export async function SiteHeader() {
               >
                 Profile
               </Link>
-              {isEmployee ? (
+              {showTeamLink ? (
                 <Link
                   href="/dashboard/team"
                   className="hover:text-foreground transition-colors"
                 >
-                  Team
+                  {role === "DEAL_SOURCER" ? "Sourcing" : "Team"}
                 </Link>
               ) : null}
               <Link

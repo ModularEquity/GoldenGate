@@ -65,4 +65,12 @@ export const DASHBOARD_UTILITY_LINKS: DashboardNavLink[] = [
 export const EMPLOYEE_NAV_LINKS: DashboardNavLink[] = [
   { href: "/dashboard/team", label: "Team & operations" },
   { href: "/dashboard/team/deals/new", label: "Add a new deal" },
+  { href: "/dashboard/team/deals/import", label: "Import deals (CSV)" },
+];
+
+/** Shown for Deal Sourcer (same deal tools, focused hub) */
+export const DEAL_SOURCER_NAV_LINKS: DashboardNavLink[] = [
+  { href: "/dashboard/team", label: "Deal sourcing hub" },
+  { href: "/dashboard/team/deals/new", label: "Add a new deal" },
+  { href: "/dashboard/team/deals/import", label: "Import deals (CSV)" },
 ];

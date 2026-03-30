@@ -8,6 +8,7 @@
 |-----------|------------|------|
 | Auth / sessions / OAuth | `ARCHITECTURE.md` §Auth, `src/auth.ts`, `src/auth.config.ts`, `middleware.ts`, `docs/google-oauth.md` | `src/types/next-auth.d.ts` |
 | Database / Prisma | `prisma/schema.prisma`, `docs/database-vercel-postgres.md` | Migration SQL under `prisma/migrations/` |
+| Deal sourcing / audit | `docs/deal-sourcer.md`, `src/lib/deal-roles.ts`, `DealAuditLog` | `POST /api/deals`, `PATCH /api/deals/[slug]`, `POST /api/deals/import-csv` |
 | Investor onboarding / tax PDF | `src/lib/onboarding-status.ts`, `src/app/dashboard/onboarding/**` | `src/lib/tax-profile.ts`, `src/lib/tax-pdf.ts` |
 | Deals / subscriptions | `src/lib/deals.ts`, `prisma/schema.prisma` (`Deal`, `DealSubscription`) | `src/app/dashboard/deals/**`, `src/app/dashboard/subscribe/**` |
 | Bank link / Plaid | `docs/plaid-reference.md`, `src/lib/plaid-server.ts` | `src/app/api/plaid/**`, `src/components/PlaidLinkButton.tsx` |
