@@ -2,10 +2,13 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { LogoutButton } from "@/components/LogoutButton";
 
+/**
+ * Top bar: brand + auth only. All app navigation lives in the dashboard
+ * left ribbon (`DashboardShell`) when logged in — keeps the header unchanged
+ * except Login → Logout.
+ */
 export async function SiteHeader() {
   const session = await auth();
-  const role = session?.user?.role;
-  const showTeamLink = role === "EMPLOYEE" || role === "DEAL_SOURCER";
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur">
@@ -13,75 +16,18 @@ export async function SiteHeader() {
         <Link href="/" className="text-lg font-semibold tracking-tight text-accent">
           Modular Equity
         </Link>
-        <nav className="flex flex-wrap items-center justify-end gap-x-6 gap-y-2 text-sm text-muted">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Home
-          </Link>
+        <div className="flex items-center gap-3 text-sm">
           {session?.user ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="hover:text-foreground transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/dashboard/faq"
-                className="hover:text-foreground transition-colors"
-              >
-                FAQ
-              </Link>
-              <Link
-                href="/dashboard/technical-catalogue"
-                className="hidden md:inline hover:text-foreground transition-colors"
-              >
-                Tech catalogue
-              </Link>
-              <Link
-                href="/dashboard/profile"
-                className="hover:text-foreground transition-colors"
-              >
-                Profile
-              </Link>
-              {showTeamLink ? (
-                <Link
-                  href="/dashboard/team"
-                  className="hover:text-foreground transition-colors"
-                >
-                  {role === "DEAL_SOURCER" ? "Sourcing" : "Team"}
-                </Link>
-              ) : null}
-              <Link
-                href="/contact"
-                className="hover:text-foreground transition-colors"
-              >
-                Contact
-              </Link>
-              <LogoutButton />
-            </>
+            <LogoutButton />
           ) : (
-            <>
-              <Link
-                href="/contact"
-                className="hover:text-foreground transition-colors"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/login"
-                className="hover:text-foreground transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                className="rounded-md border border-border bg-card px-3 py-1.5 text-foreground hover:border-accent hover:text-accent transition-colors"
-              >
-                Register
-              </Link>
-            </>
+            <Link
+              href="/login"
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-foreground hover:border-accent hover:text-accent transition-colors"
+            >
+              Login
+            </Link>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );

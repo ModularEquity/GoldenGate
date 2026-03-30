@@ -116,21 +116,7 @@ export function DashboardShell({ shellRole, children }: Props) {
     setOpenSection((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
-  /** Expand the section that contains the current route */
-  useEffect(() => {
-    setOpenSection((prev) => {
-      const next = { ...prev };
-      for (const s of DASHBOARD_NAV_SECTIONS) {
-        const activeHere = s.links.some((link) => {
-          const base = pathOnly(link.href);
-          if (base === "/dashboard") return pathname === "/dashboard";
-          return pathname === base || pathname.startsWith(`${base}/`);
-        });
-        if (activeHere) next[s.id] = true;
-      }
-      return next;
-    });
-  }, [pathname]);
+  /** Sections default collapsed — user expands manually */
 
   return (
     <div className="flex w-full flex-col gap-8 lg:flex-row lg:items-start">

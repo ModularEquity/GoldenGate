@@ -58,6 +58,7 @@ export const DASHBOARD_UTILITY_LINKS: DashboardNavLink[] = [
   { href: "/dashboard", label: "Hub home" },
   { href: "/dashboard/faq", label: "FAQ" },
   { href: "/dashboard/profile", label: "Profile" },
+  { href: "/contact", label: "Contact" },
   { href: "/dashboard/roadmap", label: "Product roadmap" },
   { href: "/dashboard/technical-catalogue", label: "Technical catalogue" },
 ];
