@@ -64,6 +64,11 @@ export function LoginForm() {
       >
         Continue with Google
       </button>
+      <p className="text-center text-xs text-muted">
+        <Link href="/help/google-signin" className="text-accent hover:underline">
+          Google sign-in error (redirect_uri)?
+        </Link>
+      </p>
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">

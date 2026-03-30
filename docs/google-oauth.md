@@ -40,7 +40,9 @@ https://<your-host>/api/auth/callback/google
 - or `APP_URL` = `https://modularequity.com`  
 - or `NEXT_PUBLIC_APP_URL` = `https://modularequity.com`
 
-The app picks the first available. Then add **both** redirect URIs in Google Console if you use custom domain **and** `*.vercel.app`:
+If **none** of these are set, the app derives a URL from `APP_URL`, `NEXT_PUBLIC_APP_URL`, `VERCEL_PROJECT_PRODUCTION_URL`, then `VERCEL_URL`. **When multiple are present, it prefers a host that is not `*.vercel.app`** so the OAuth `redirect_uri` matches your custom domain in Google Cloud (as long as you added that redirect URI). Redeploy after changing env vars.
+
+Then add **both** redirect URIs in Google Console if you use custom domain **and** `*.vercel.app`:
 
 - `https://modularequity.com/api/auth/callback/google`
 - `https://<project>.vercel.app/api/auth/callback/google`

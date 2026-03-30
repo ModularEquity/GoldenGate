@@ -11,22 +11,35 @@ import { generateReferralCode } from "@/lib/referral-code";
 
 /**
  * OAuth redirect_uri must match Google Console exactly. On custom domains,
- * VERCEL_URL is often still *.vercel.app — set AUTH_URL or APP_URL to
- * https://modularequity.com (see docs/google-oauth.md).
+ * Vercel often sets VERCEL_URL to *.vercel.app while users hit modularequity.com —
+ * Google then sees redirect_uri=https://xxx.vercel.app/... and returns
+ * redirect_uri_mismatch if only the custom domain is registered.
+ *
+ * Prefer a non-*.vercel.app host when multiple env vars are present.
+ * Still set AUTH_URL (or NEXT_PUBLIC_APP_URL) explicitly in production when unsure.
+ * See docs/google-oauth.md.
  */
 function ensureAuthUrl() {
   if (process.env.AUTH_URL?.trim() || process.env.NEXTAUTH_URL?.trim()) return;
 
-  const candidates = [
+  const raw = [
     process.env.APP_URL?.trim(),
     process.env.NEXT_PUBLIC_APP_URL?.trim(),
     process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim(),
     process.env.VERCEL_URL?.trim(),
   ].filter(Boolean) as string[];
 
-  const pick = candidates[0];
+  const normalized = raw.map((u) =>
+    u.startsWith("http") ? u : `https://${u}`,
+  );
+
+  const customDomain = normalized.find(
+    (u) => !u.includes(".vercel.app") && !u.includes("localhost"),
+  );
+  const pick = customDomain ?? normalized[0];
+
   if (pick) {
-    process.env.AUTH_URL = pick.startsWith("http") ? pick : `https://${pick}`;
+    process.env.AUTH_URL = pick;
   }
 }
 ensureAuthUrl();

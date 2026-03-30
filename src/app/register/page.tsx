@@ -29,6 +29,11 @@ export default function RegisterPage() {
           accounts are marked as <strong>Employee</strong> for staff permissions.
         </p>
         <GoogleSignInButton label="Register with Google" callbackUrl="/dashboard" />
+        <p className="text-center text-xs text-muted">
+          <Link href="/help/google-signin" className="text-accent hover:underline">
+            Problem with Google sign-in? (redirect error)
+          </Link>
+        </p>
       </div>
 
       <div className="relative">
